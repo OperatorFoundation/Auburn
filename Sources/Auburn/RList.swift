@@ -88,6 +88,18 @@ public final class RList<LiteralType>: RBase, ExpressibleByArrayLiteral, Sequenc
     public var startIndex: RList<LiteralType>.Index = 0
     public var endIndex: RList<LiteralType>.Index = -1
     
+    var count: Index {
+        get {
+            let r = Auburn.redis!
+            let maybeResult = try? r.sendCommand("llen", values: [self.key])
+            guard let result = maybeResult else {
+                return 0
+            }
+            
+            return result as! Int
+        }
+    }
+
     public convenience init(arrayLiteral elements: LiteralType...) {
         self.init()
 
@@ -160,5 +172,15 @@ public final class RList<LiteralType>: RBase, ExpressibleByArrayLiteral, Sequenc
     
     public func makeIterator() -> RListIterator<LiteralType> {
         return RListIterator<LiteralType>(parent: self, startIndex: startIndex, endIndex: endIndex)
+    }
+}
+
+extension RList/*: *RangeReplaceableCollection*/ {
+    func append(_ newElement: RList.Element) {
+        guard let r = Auburn.redis else {
+            return
+        }
+        
+        _ = try? r.sendCommand("rpush", values: [key, String(describing: newElement)])
     }
 }
