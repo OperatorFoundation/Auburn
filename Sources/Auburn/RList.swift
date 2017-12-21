@@ -88,7 +88,7 @@ public final class RList<LiteralType>: RBase, ExpressibleByArrayLiteral, Sequenc
     public var startIndex: RList<LiteralType>.Index = 0
     public var endIndex: RList<LiteralType>.Index = -1
     
-    var count: Index {
+    public var count: Index {
         get {
             let r = Auburn.redis!
             let maybeResult = try? r.sendCommand("llen", values: [self.key])
@@ -176,7 +176,7 @@ public final class RList<LiteralType>: RBase, ExpressibleByArrayLiteral, Sequenc
 }
 
 extension RList/*: *RangeReplaceableCollection*/ {
-    func append(_ newElement: RList.Element) {
+    public func append(_ newElement: RList.Element) {
         guard let r = Auburn.redis else {
             return
         }
