@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "RedShot",
+        "repositoryURL": "https://github.com/bermudadigitalstudio/Redshot.git",
+        "state": {
+          "branch": null,
+          "revision": "2ca7afee560beaf6371a063a93af8c9140ae72de",
+          "version": "0.1.0"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
