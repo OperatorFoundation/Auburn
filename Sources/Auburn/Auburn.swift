@@ -7,9 +7,8 @@ public class Auburn {
             if _redis == nil {
                 _redis = try? Redis(hostname: "localhost", port: 6379)
             }
-            
+
             return _redis
         }
     }
 }
-
