@@ -3,11 +3,11 @@
     "pins": [
       {
         "package": "RedShot",
-        "repositoryURL": "https://github.com/bermudadigitalstudio/Redshot.git",
+        "repositoryURL": "https://github.com/OperatorFoundation/Redshot.git",
         "state": {
           "branch": null,
-          "revision": "2ca7afee560beaf6371a063a93af8c9140ae72de",
-          "version": "0.1.0"
+          "revision": "a7799f31ba42a61342d52c6beebc388391ed0953",
+          "version": "0.2.0"
         }
       }
     ]
