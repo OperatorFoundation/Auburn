@@ -22,7 +22,20 @@ class AuburnTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
     }
+    
+    func testStringDelete() {
+        let testString: RString = "cats and dogs together?!??"
+        testString.delete()
+    }
 
+    func testStringKey() {
+        let correct: RString = "cats and dogs together?!??"
+        correct.key="testString"
+        
+        let result: RString = RString(key: "testString")
+        XCTAssertEqual(result, correct)
+    }
+    
     func testListDelete() {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct results.

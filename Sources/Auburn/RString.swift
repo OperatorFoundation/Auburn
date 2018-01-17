@@ -44,4 +44,31 @@ public final class RString: RBase, ExpressibleByStringLiteral, LosslessStringCon
 
         _ = try? r.set(key: key, value: stringLiteral)
     }
+    
+    public override init() {
+        super.init()
+    }
+    
+    public override init(key: String) {
+        super.init(key: key)
+    }
+}
+
+extension RString: Equatable {
+    public static func ==(lhs: RString, rhs: RString) -> Bool {
+        let dest: RString = RString()
+        
+        guard let r = Auburn.redis else {
+            return false
+        }
+        
+        _ = try? r.sendCommand("bitop", values: ["XOR", dest.key, lhs.key, rhs.key])
+        let maybeResult = try? r.sendCommand("bitcount", values: [dest.key])
+        guard let result = maybeResult else {
+            return false
+        }
+        let intResult = result as! Int
+        
+        return intResult == 0
+    }
 }
