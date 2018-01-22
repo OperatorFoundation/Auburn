@@ -208,7 +208,8 @@ public final class RSortedSet<LiteralType>: RBase, ExpressibleByArrayLiteral, Ex
     // This is expensive as Redis does not have a zdiffstore command.
     // This should only be using in testing with small keys.
     // Do not use this in production as it will not be performant with large datasets.
-    public func formSymmetricDifference(_ other: RSortedSet<LiteralType>) {
+    public func formSymmetricDifference(_ other: RSortedSet<LiteralType>)
+    {
         let inter = RSortedSet<LiteralType>()
 
         guard let r = Auburn.redis else {
@@ -228,12 +229,83 @@ public final class RSortedSet<LiteralType>: RBase, ExpressibleByArrayLiteral, Ex
     }
 
     // Sequence
-    public subscript(position: Int) -> LiteralType {
+    public subscript(position: Int) -> LiteralType?
+    {
         let r = Auburn.redis!
+        print("ZRange: \(self.key), \(String(describing: position))")
         let maybeResult = try? r.sendCommand("zrange", values: [self.key, String(describing: position), String(describing: position)])
-        let result = maybeResult! as! [LiteralType]
-
-        return String(describing: result[0]) as! LiteralType
+        /// let maybeResult = try? r.sendCommand("zrange", values: [self.key, String(describing: position), String(describing: position)])
+        
+        guard let result = maybeResult as? [RedisType]
+        else
+        {
+            return nil
+        }
+        
+        let typeString = "\(LiteralType.self)"
+        print("Subscript Result Count:\(result.count)")
+        print("Requested position: \(position)")
+        switch typeString
+        {
+            case "String":
+                switch result[position]
+                {
+                    case let dataResult as Data:
+                        return dataResult.string as? LiteralType
+                    case let stringResult as String:
+                        return stringResult as? LiteralType
+                    default:
+                        return String(describing: result) as? LiteralType
+                }
+            case "Data":
+                switch result[position]
+                {
+                    case let dataResult as Data:
+                        return dataResult as? LiteralType
+                    case let stringResult as String:
+                        return stringResult.data as? LiteralType
+                    default:
+                        return nil
+                }
+            case "Int":
+                switch result[position]
+                {
+                    case let dataResult as Data:
+                        return Int(dataResult.string) as? LiteralType
+                    case let stringResult as String:
+                        return Int(stringResult) as? LiteralType
+                    case let intResult as Int:
+                        return intResult as? LiteralType
+                    default:
+                        return nil
+                }
+            case "Float":
+                switch result[position]
+                {
+                    case let dataResult as Data:
+                        return Float(dataResult.string) as? LiteralType
+                    case let stringResult as String:
+                        return Float(stringResult) as? LiteralType
+                    case let floatResult as Float:
+                        return floatResult as? LiteralType
+                    default:
+                        return nil
+                }
+            case "Double":
+                switch result[position]
+                {
+                    case let dataResult as Data:
+                        return Double(dataResult.string) as? LiteralType
+                    case let stringResult as String:
+                        return Double(stringResult) as? LiteralType
+                    case let doubleResult as Double:
+                        return doubleResult as? LiteralType
+                    default:
+                        return nil
+                }
+            default:
+                return nil
+        }
     }
 
     public func index(after i: Index) -> Index {

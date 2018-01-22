@@ -12,23 +12,17 @@ import XCTest
 extension String: LosslessStringConvertible {
 }
 
-class AuburnTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-        super.tearDown()
-    }
+class AuburnTests: XCTestCase
+{
     
-    func testStringDelete() {
+    func testStringDelete()
+    {
         let testString: RString = "cats and dogs together?!??"
         testString.delete()
     }
 
-    func testStringKey() {
+    func testStringKey()
+    {
         let correct: RString = "cats and dogs together?!??"
         correct.key="testString"
         
@@ -36,46 +30,37 @@ class AuburnTests: XCTestCase {
         XCTAssertEqual(result, correct)
     }
     
-    func testListDelete() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-
+    func testListDelete()
+    {
+        
         let testList: RList<String> = ["cats", "and", "dogs", "together?!??"]
         testList.delete()
     }
 
-    func testListCreating() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-
+    func testListCreating()
+    {
         let testList: RList<String> = ["cats", "and", "dogs", "together?!??"]
         testList.key="creating"
         testList.delete()
     }
 
-    func testListMoving() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-
+    func testListMoving()
+    {
         let testList: RList<String> = ["cats", "and", "dogs", "together?!??"]
         testList.key="temp"
         testList.key="moving"
         testList.delete()
     }
 
-    func testListDeleting() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-
+    func testListDeleting()
+    {
         let testList: RList<String> = ["cats", "and", "dogs", "together?!??"]
         testList.key="deleting"
         testList.delete()
     }
 
-    func testSequenceIteration() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-
+    func testSequenceIteration()
+    {
         let testList: RList<String> = ["cats", "and", "dogs", "together?!??"]
         let golden: [String] = ["cats", "and", "dogs", "together?!??"]
 
@@ -84,7 +69,8 @@ class AuburnTests: XCTestCase {
         }
     }
 
-    func testListInt() {
+    func testListInt()
+    {
         let testIntList: RList<Int> = [1, 2, 3, 4]
 
         let golden: [Int] = [1, 2, 3, 4]
@@ -94,70 +80,87 @@ class AuburnTests: XCTestCase {
         }
     }
 
-    func testMapDelete() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-
+    func testMapDelete()
+    {
         let testMap: RMap<String, String> = ["a": "cats", "b": "and", "c": "dogs", "d": "together?!??"]
         testMap.delete()
     }
 
-    func testMapCreating() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-
+    func testMapCreating()
+    {
         let testMap: RMap<String, String> = ["a": "cats", "b": "and", "c": "dogs", "d": "together?!??"]
         testMap.key="creatingMap"
         testMap.delete()
     }
 
-    func testMapMoving() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-
+    func testMapMoving()
+    {
         let testMap: RMap<String, String> = ["a": "cats", "b": "and", "c": "dogs", "d": "together?!??"]
         testMap.key="tempMap"
         testMap.key="movingMap"
         testMap.delete()
     }
 
-    func testMapIteration() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-
+    func testStringMapIteration()
+    {
         let testMap: RMap<String, String> = ["a": "cats", "b": "and", "c": "dogs", "d": "together?!??"]
         var golden: Dictionary<String, String> = ["a": "cats", "b": "and", "c": "dogs", "d": "together?!??"]
 
-        for itemKey in ["a", "b", "c", "d"] {
+        for itemKey in ["a", "b", "c", "d"]
+        {
             XCTAssertEqual(testMap[itemKey], golden[itemKey])
         }
+        
+        testMap.delete()
     }
 
-    func testIntMapIteration() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-
+    func testIntMapIteration()
+    {
         let testMap: RMap<String, Int> = ["a": 1, "b": 2, "c": 3, "d": 4]
         var golden: Dictionary<String, Int> = ["a": 1, "b": 2, "c": 3, "d": 4]
 
-        for itemKey in ["a", "b", "c", "d"] {
+        for itemKey in ["a", "b", "c", "d"]
+        {
             XCTAssertEqual(testMap[itemKey], golden[itemKey])
         }
+        
+        testMap.delete()
+    }
+    
+//    func testFloatMapIteration()
+//    {
+//        let testMap: RMap<String, Float> = ["a": 1, "b": 2, "c": 3, "d": 4]
+//        var golden: Dictionary<String, Float> = ["a": 1, "b": 2, "c": 3, "d": 4]
+//        
+//        for itemKey in ["a", "b", "c", "d"]
+//        {
+//            XCTAssertEqual(testMap[itemKey], golden[itemKey])
+//        }
+//        
+//        testMap.delete()
+//    }
+    
+    func testMapSubscript()
+    {
+        let dataValue = Data(count: 12)
+        let keyString = "aFieldKeyString"
+        
+        let testMap: RMap<String, Data> = [keyString: dataValue]
+        testMap.key = "testingRMapData"
+        
+        let swiftDictionary: Dictionary<String, Data> = [keyString: dataValue]
+
+        XCTAssertEqual(testMap[keyString], swiftDictionary[keyString])
     }
 
-    func testSetDelete() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-
+    func testSetDelete()
+    {
         let testSet: RSet<String> = ["cats", "and", "dogs", "together?!??"]
         testSet.delete()
     }
 
     func testSetCreating() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-
-        let testSet: RSet<String> = ["cats", "and", "dogs", "together?!??"]
+                let testSet: RSet<String> = ["cats", "and", "dogs", "together?!??"]
         testSet.key="creatingSet"
         testSet.delete()
     }
@@ -169,13 +172,25 @@ class AuburnTests: XCTestCase {
         testSet.delete()
     }
 
-    func testSetIteration() {
+    func testSetIteration()
+    {
         let testSet: RSet<String> = ["cats", "and", "dogs", "together?!??"]
+        testSet.key = "testSetIteration"
         let golden: Set<String> = ["cats", "and", "dogs", "together?!??"]
 
         // Since this is a set, order is not guaranteed.
-        for x in 0...3 {
-            XCTAssertTrue(golden.contains(testSet[x]))
+        for x in 0..<testSet.count
+        {
+            guard testSet[x] != nil
+            else
+            {
+                XCTFail("Nothing to be found at index \(x)")
+                print("Test Set: \(testSet)")
+                print("Golden: \(golden)")
+                return
+            }
+            
+            XCTAssertTrue(golden.contains(testSet[x]!))
         }
     }
 
@@ -250,8 +265,14 @@ class AuburnTests: XCTestCase {
 
 //         x.contains(e) implies x.union(y).contains(e)
 
-        for index in 0..<testRSet1.count {
-            let e = testRSet1[index]
+        for index in 0..<testRSet1.count
+        {
+            guard let e = testRSet1[index]
+            else
+            {
+                XCTFail()
+                return
+            }
             XCTAssertTrue(testRSet1.contains(e))
             XCTAssertTrue(testRSet1.union(testRSet2).contains(e))
         }
@@ -259,8 +280,15 @@ class AuburnTests: XCTestCase {
 //         x.union(y).contains(e) implies x.contains(e) || y.contains(e)
 
         let u = testRSet1.union(testRSet2)
-        for index in 0..<u.count {
-            let e = u[index]
+        for index in 0..<u.count
+        {
+            guard let e = u[index]
+            else
+            {
+                XCTFail()
+                return
+            }
+            
             XCTAssertTrue(u.contains(e))
             XCTAssertTrue(testRSet1.contains(e) || testRSet2.contains(e))
         }
@@ -268,26 +296,51 @@ class AuburnTests: XCTestCase {
 //         x.contains(e) && y.contains(e) if and only if x.intersection(y).contains(e)
 
         let inter = testRSet1.intersection(testRSet2)
-        for index in 0..<inter.count {
-            let e = inter[index]
+        for index in 0..<inter.count
+        {
+            guard let e = inter[index]
+            else
+            {
+                XCTFail()
+                return
+            }
             XCTAssertTrue(inter.contains(e))
             XCTAssertTrue(testRSet1.contains(e) && testRSet2.contains(e))
         }
 
-        for index in 0..<testRSet1.count {
-            let e = testRSet1[index]
-            if inter.contains(e) {
+        for index in 0..<testRSet1.count
+        {
+            guard let e = testRSet1[index]
+            else
+            {
+                XCTFail()
+                return
+            }
+            if inter.contains(e)
+            {
                 XCTAssertTrue(testRSet1.contains(e) && testRSet2.contains(e))
-            } else {
+            }
+            else
+            {
                 XCTAssertFalse(testRSet1.contains(e) && testRSet2.contains(e))
             }
         }
 
-        for index in 0..<testRSet2.count {
-            let e = testRSet2[index]
-            if inter.contains(e) {
+        for index in 0..<testRSet2.count
+        {
+            guard let e = testRSet2[index]
+            else
+            {
+                XCTFail()
+                return
+            }
+            
+            if inter.contains(e)
+            {
                 XCTAssertTrue(testRSet1.contains(e) && testRSet2.contains(e))
-            } else {
+            }
+            else
+            {
                 XCTAssertFalse(testRSet1.contains(e) && testRSet2.contains(e))
             }
         }
@@ -333,40 +386,36 @@ class AuburnTests: XCTestCase {
         XCTAssertFalse(testRSet2.isStrictSubset(of: testRSet2))
     }
 
-    func testSortedSetDelete() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-
-        let testSortedSet: RSortedSet<String> = ["cats", "and", "dogs", "together?!??"]
+    func testSortedSetDelete()
+    {
+                let testSortedSet: RSortedSet<String> = ["cats", "and", "dogs", "together?!??"]
         testSortedSet.delete()
     }
 
-    func testSortedSetCreating() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-
-        let testSortedSet: RSortedSet<String> = ["cats", "and", "dogs", "together?!??"]
+    func testSortedSetCreating()
+    {
+                let testSortedSet: RSortedSet<String> = ["cats", "and", "dogs", "together?!??"]
         testSortedSet.key="creatingSortedSet"
         testSortedSet.delete()
     }
 
-    func testSortedSetDictionaryCreating() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-
+    func testSortedSetDictionaryCreating()
+    {
         let testSortedSet: RSortedSet<String> = ["cats": 0, "and": 1, "dogs": 3, "together?!??": 4]
         testSortedSet.key="creatingSortedSet"
         testSortedSet.delete()
     }
 
-    func testSortedSetMoving() {
+    func testSortedSetMoving()
+    {
         let testSortedSet: RSortedSet<String> = ["cats", "and", "dogs", "together?!??"]
         testSortedSet.key="tempSortedSet"
         testSortedSet.key="movingSortedSet"
         testSortedSet.delete()
     }
 
-    func testSortedSetEquality() {
+    func testSortedSetEquality()
+    {
         let testSortedSet1: RSortedSet<String> = ["cats", "and", "dogs", "together?!??"]
         let testSortedSet2: RSortedSet<String> = ["cats", "and", "dogs", "together?!??"]
         let testSortedSet3: RSortedSet<String> = ["a", "b", "c", "d"]
@@ -375,14 +424,16 @@ class AuburnTests: XCTestCase {
         XCTAssertNotEqual(testSortedSet2, testSortedSet3)
     }
 
-    func testSortedSetSubscript() {
+    func testSortedSetSubscript()
+    {
         let testSortedSet: RSortedSet<String> = ["cats": 0, "and": 2, "dogs": 4, "together?!??": 8]
 
         XCTAssertEqual(testSortedSet["and"], 2)
         XCTAssertEqual(testSortedSet[1], "and")
     }
 
-    func testSortedSetAlgebraMethods() {
+    func testSortedSetAlgebraMethods()
+    {
         let testRSortedSet1: RSortedSet<String> = ["cats", "and", "dogs", "together?!??"]
         let testRSortedSet2: RSortedSet<String> = ["cats", "are", "never", "dogs"]
         let testUnion: RSortedSet<String> = ["cats", "and", "dogs", "together?!??"]
@@ -409,7 +460,8 @@ class AuburnTests: XCTestCase {
         XCTAssertEqual(testSymDiff, goldenSymDiff)
     }
 
-    func testSortedSetAlgebraAxioms() {
+    func testSortedSetAlgebraAxioms()
+    {
         let testRSortedSet1: RSortedSet<String> = ["cats", "and", "dogs", "together?!??"]
         let testRSortedSet2: RSortedSet<String> = ["cats", "are", "never", "dogs"]
         let superset: RSortedSet<String> = ["cats", "and", "dogs", "together?!??", "again?!?!?!"]
@@ -444,8 +496,22 @@ class AuburnTests: XCTestCase {
 
         //         x.contains(e) implies x.union(y).contains(e)
 
-        for index in 0..<testRSortedSet1.count {
-            let e = testRSortedSet1[index]
+        print("\ntestRSortedSet1: \(testRSortedSet1)")
+        print("Count: \(testRSortedSet1.count)")
+        for index in 0..<testRSortedSet1.count
+        {
+            guard let e = testRSortedSet1[index]
+            else
+            {
+                print("\ntestRSortedSet1 index \(index) out of range for set length of \(testRSortedSet1.count).\n")
+                XCTFail()
+                return
+            }
+            
+            print("Index:\(index)")
+            print("Value: \(e)")
+            print("Union Count: \(testRSortedSet1.union(testRSortedSet2).count)")
+            
             XCTAssertTrue(testRSortedSet1.contains((e, 0)))
             XCTAssertTrue(testRSortedSet1.union(testRSortedSet2).contains((e, 0)))
         }
@@ -453,8 +519,15 @@ class AuburnTests: XCTestCase {
         //         x.union(y).contains(e) implies x.contains(e) || y.contains(e)
 
         let u = testRSortedSet1.union(testRSortedSet2)
-        for index in 0..<u.count {
-            let e = u[index]
+        for index in 0 ..< u.count
+        {
+            guard let e = u[index]
+                else
+            {
+                print("\nu index \(index) out of range for set length of \(u.count).\n")
+                XCTFail()
+                return
+            }
             XCTAssertTrue(u.contains((e, 0)))
             XCTAssertTrue(testRSortedSet1.contains((e, 0)) || testRSortedSet2.contains((e, 0)))
         }
@@ -462,26 +535,55 @@ class AuburnTests: XCTestCase {
         //         x.contains(e) && y.contains(e) if and only if x.intersection(y).contains(e)
 
         let inter = testRSortedSet1.intersection(testRSortedSet2)
-        for index in 0..<inter.count {
-            let e = inter[index]
+        for index in 0..<inter.count
+        {
+            guard let e = inter[index]
+                else
+            {
+                print("\ntinter index \(index) out of range for set length of \(inter.count).\n")
+                XCTFail()
+                return
+            }
             XCTAssertTrue(inter.contains((e, 0)))
             XCTAssertTrue(testRSortedSet1.contains((e, 0)) && testRSortedSet2.contains((e, 0)))
         }
 
-        for index in 0..<testRSortedSet1.count {
-            let e = testRSortedSet1[index]
-            if inter.contains((e, 0)) {
+        for index in 0..<testRSortedSet1.count
+        {
+            guard let e = testRSortedSet1[index]
+                else
+            {
+                print("\ntestRSortedSet1 index \(index) out of range for set length of \(testRSortedSet1.count).\n")
+                XCTFail()
+                return
+            }
+            
+            if inter.contains((e, 0))
+            {
                 XCTAssertTrue(testRSortedSet1.contains((e, 0)) && testRSortedSet2.contains((e, 0)))
-            } else {
+            }
+            else
+            {
                 XCTAssertFalse(testRSortedSet1.contains((e, 0)) && testRSortedSet2.contains((e, 0)))
             }
         }
 
-        for index in 0..<testRSortedSet2.count {
-            let e = testRSortedSet2[index]
-            if inter.contains((e, 0)) {
+        for index in 0..<testRSortedSet2.count
+        {
+            guard let e = testRSortedSet2[index]
+                else
+            {
+                print("\ntestRSortedSet2 index \(index) out of range for set length of \(testRSortedSet2.count).\n")
+                XCTFail()
+                return
+            }
+            
+            if inter.contains((e, 0))
+            {
                 XCTAssertTrue(testRSortedSet1.contains((e, 0)) && testRSortedSet2.contains((e, 0)))
-            } else {
+            }
+            else
+            {
                 XCTAssertFalse(testRSortedSet1.contains((e, 0)) && testRSortedSet2.contains((e, 0)))
             }
         }
@@ -524,12 +626,5 @@ class AuburnTests: XCTestCase {
 
         XCTAssertTrue(testRSortedSet2.isSubset(of: testRSortedSet2))
         XCTAssertFalse(testRSortedSet2.isStrictSubset(of: testRSortedSet2))
-    }
-
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
     }
 }

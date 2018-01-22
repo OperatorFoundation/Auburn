@@ -43,12 +43,12 @@ public final class RSet<LiteralType>: RBase, ExpressibleByArrayLiteral, Equatabl
         _ = try? r.sendCommand("del", values: [self.key])
 
         for value in elements {
-            _ = try? r.sendCommand("sadd", values: [self.key, String(describing: value)])
+            _ = try?r.sadd(key: self.key, values: String(describing: value))
         }
     }
 
     // Equatable
-    public static func ==(lhs: RSet<LiteralType>, rhs: RSet<LiteralType>) -> Bool {
+    public static func == (lhs: RSet<LiteralType>, rhs: RSet<LiteralType>) -> Bool {
         guard lhs.count == rhs.count else {
             return false
         }
@@ -71,7 +71,8 @@ public final class RSet<LiteralType>: RBase, ExpressibleByArrayLiteral, Equatabl
         return String(describing: result) == "1"
     }
 
-    public func union(_ other: RSet<LiteralType>) -> RSet<LiteralType> {
+    public func union(_ other: RSet<LiteralType>) -> RSet<LiteralType>
+    {
         let u = RSet<LiteralType>()
 
         guard let r = Auburn.redis else {
@@ -120,7 +121,7 @@ public final class RSet<LiteralType>: RBase, ExpressibleByArrayLiteral, Equatabl
             return (false, newMember)
         }
 
-        let maybeResult = try? r.sendCommand("sadd", values: [self.key, String(describing: newMember)])
+        let maybeResult = try? r.sadd(key: self.key, values: String(describing: newMember))
         guard let result = maybeResult else {
             return (false, newMember)
         }
@@ -150,7 +151,7 @@ public final class RSet<LiteralType>: RBase, ExpressibleByArrayLiteral, Equatabl
             return nil
         }
 
-        let maybeResult = try? r.sendCommand("sadd", values: [self.key, String(describing: newMember)])
+        let maybeResult = try? r.sadd(key: self.key, values: String(describing: newMember))
         guard let result = maybeResult else {
             return nil
         }
@@ -195,13 +196,97 @@ public final class RSet<LiteralType>: RBase, ExpressibleByArrayLiteral, Equatabl
     }
 
     // Sequence
-    public subscript(position: Int) -> LiteralType {
+    public subscript(position: Int) -> LiteralType?
+    {
         let r = Auburn.redis!
-        let maybeResult = try? r.sendCommand("smembers", values: [self.key])
-        let result = maybeResult! as! [LiteralType]
+        let maybeResult = try? r.smbembers(key: self.key)
+        
+        guard let result = maybeResult as? [RedisType]
+        else
+        {
+            return nil
+        }
 
-        return String(describing: result[position]) as! LiteralType
+        let typeString = "\(LiteralType.self)"
+
+        switch typeString
+        {
+            case "String":
+                switch result[position]
+                {
+                    case let dataResult as Data:
+                        return dataResult.string as? LiteralType
+                    case let stringResult as String:
+                        return stringResult as? LiteralType
+                    default:
+                        return String(describing: result) as? LiteralType
+                }
+            case "Data":
+                switch result[position]
+                {
+                    case let dataResult as Data:
+                        return dataResult as? LiteralType
+                    case let stringResult as String:
+                        return stringResult.data as? LiteralType
+                    default:
+                        return nil
+                }
+            case "Int":
+                switch result[position]
+                {
+                    case let dataResult as Data:
+                        return Int(dataResult.string) as? LiteralType
+                    case let stringResult as String:
+                        return Int(stringResult) as? LiteralType
+                    case let intResult as Int:
+                        return intResult as? LiteralType
+                    default:
+                        return nil
+                }
+            case "Float":
+                switch result[position]
+                {
+                    case let dataResult as Data:
+                        return Float(dataResult.string) as? LiteralType
+                    case let stringResult as String:
+                        return Float(stringResult) as? LiteralType
+                    case let floatResult as Float:
+                        return floatResult as? LiteralType
+                    default:
+                        return nil
+                }
+            case "Double":
+                switch result[position]
+                {
+                    case let dataResult as Data:
+                        return Double(dataResult.string) as? LiteralType
+                    case let stringResult as String:
+                        return Double(stringResult) as? LiteralType
+                    case let doubleResult as Double:
+                        return doubleResult as? LiteralType
+                    default:
+                        return nil
+                }
+            default:
+                return nil
+        }
     }
+    
+//    public subscript(position: Int) -> LiteralType?
+//    {
+//        let r = Auburn.redis!
+//        let maybeResult = try? r.smbembers(key: self.key)
+//
+//        print("\n\(maybeResult!)")
+//
+//        guard let result = maybeResult as? [LiteralType]
+//        else
+//        {
+//            return nil
+//        }
+//
+//        return String(describing: result[position]) as? LiteralType
+//    }
 
     public func index(after i: Index) -> Index {
         return i + 1
@@ -212,7 +297,7 @@ public final class RSet<LiteralType>: RBase, ExpressibleByArrayLiteral, Equatabl
     // You should probably not use this functionality in production as it will not be performant on large sets.
     public func makeIterator() -> IndexingIterator<[LiteralType]> {
         let r = Auburn.redis!
-        let maybeResult = try? r.sendCommand("smembers", values: [self.key])
+        let maybeResult = try? r.smbembers(key: self.key)
         let result = maybeResult! as! [LiteralType]
 
         return result.makeIterator()
