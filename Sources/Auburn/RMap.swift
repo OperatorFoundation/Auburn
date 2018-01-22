@@ -73,20 +73,20 @@ public class RMap<K: Datable, V: Datable>: RBase, ExpressibleByDictionaryLiteral
                     default:
                         return nil
                 }
-//            case "Float":
-//                switch result
-//                {
-//                    case let dataResult as Data:
-//                        let dataToFLoat = Float(bitPattern: UInt32(bigEndian: dataResult.withUnsafeBytes { $0.pointee } ))
-//                        return dataToFLoat as? V
-//                        //return Float(dataResult.string) as? V
-//                    case let stringResult as String:
-//                        return Float(stringResult) as? V
-//                    case let floatResult as Float:
-//                        return floatResult as? V
-//                    default:
-//                        return nil
-//                }
+            case "Float":
+                switch result
+                {
+                    case let dataResult as Data:
+                        let dataToFLoat = Float(bitPattern: UInt32(bigEndian: dataResult.withUnsafeBytes { $0.pointee } ))
+                        return dataToFLoat as? V
+                        //return Float(dataResult.string) as? V
+                    case let stringResult as String:
+                        return Float(stringResult) as? V
+                    case let floatResult as Float:
+                        return floatResult as? V
+                    default:
+                        return nil
+                }
             case "Double":
                 switch result
                 {

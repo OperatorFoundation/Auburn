@@ -7,12 +7,15 @@
 
 import Foundation
 import RedShot
+import Datable
 
-public final class RSortedSet<LiteralType>: RBase, ExpressibleByArrayLiteral, ExpressibleByDictionaryLiteral, Equatable, SetAlgebra {
+public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLiteral, ExpressibleByDictionaryLiteral, Equatable, SetAlgebra
+{
     public typealias Element = (LiteralType, Float)
     public typealias Index = Int
 
-    var count: Index {
+    var count: Index
+    {
         get {
             let r = Auburn.redis!
             let maybeResult = try? r.sendCommand("zcard", values: [self.key])
@@ -24,7 +27,8 @@ public final class RSortedSet<LiteralType>: RBase, ExpressibleByArrayLiteral, Ex
         }
     }
 
-    public convenience init(arrayLiteral elements: LiteralType...) {
+    public convenience init(arrayLiteral elements: LiteralType...)
+    {
         self.init()
 
         guard let r = Auburn.redis else {
@@ -38,7 +42,8 @@ public final class RSortedSet<LiteralType>: RBase, ExpressibleByArrayLiteral, Ex
         }
     }
 
-    public required convenience init(dictionaryLiteral elements: (LiteralType, Float)...) {
+    public required convenience init(dictionaryLiteral elements: (LiteralType, Float)...)
+    {
         self.init()
 
         guard let r = Auburn.redis else {
@@ -60,12 +65,33 @@ public final class RSortedSet<LiteralType>: RBase, ExpressibleByArrayLiteral, Ex
         return lhs.intersection(rhs).count == lhs.count
     }
 
-    public subscript(key: LiteralType) -> Float {
+    public subscript(key: LiteralType) -> Float?
+    {
         let r = Auburn.redis!
-        let maybeResult = try? r.sendCommand("zscore", values: [self.key, String(describing: key)])
-        let result = maybeResult!
-
-        return Float(String(describing: result)) ?? 0
+        let maybeResult = try? r.sendCommand("zscore", values: [self.key, key])
+        guard let result = maybeResult
+        else
+        {
+            return nil
+        }
+        
+        if "\(type(of: result))" == "NSNull"
+        {
+            return nil
+        }
+        
+        switch result
+        {
+            case let dataResult as Data:
+                let stringFromData = dataResult.string
+                return Float(stringFromData)
+            case let stringResult as String:
+                return Float(stringResult)
+            case let intResult as Int:
+                return Float(intResult)
+            default:
+                return nil
+        }
     }
 
     // SetAlgebra
@@ -119,11 +145,13 @@ public final class RSortedSet<LiteralType>: RBase, ExpressibleByArrayLiteral, Ex
     // This is expensive as Redis does not have a zdiffstore command.
     // This should only be using in testing with small keys.
     // Do not use this in production as it will not be performant with large datasets.
-    public func symmetricDifference(_ other: RSortedSet<LiteralType>) -> RSortedSet<LiteralType> {
+    public func symmetricDifference(_ other: RSortedSet<LiteralType>) -> RSortedSet<LiteralType>
+    {
         let inter = RSortedSet<LiteralType>()
         let u = RSortedSet<LiteralType>()
 
-        guard let r = Auburn.redis else {
+        guard let r = Auburn.redis else
+        {
             NSLog("No redis connection")
             return u
         }
@@ -132,10 +160,34 @@ public final class RSortedSet<LiteralType>: RBase, ExpressibleByArrayLiteral, Ex
         _ = try? r.sendCommand("zunionstore", values: [u.key, "2", self.key, other.key])
 
         let maybeResult = try? r.sendCommand("zrange", values: [inter.key, "0", "-1"])
-        let results = maybeResult! as! [LiteralType]
+        guard let results = maybeResult as? [RedisType], results.isEmpty == false
+        else
+        {
+            print("\nNil result from zrange command.\n")
+            return RSortedSet<LiteralType>()
+        }
+        
+        if "\(type(of: results))" == "NSNull"
+        {
+            print("\nNil result from zrange command.\n")
+            return RSortedSet<LiteralType>()
+        }
+        
 
-        for result in results {
-            _ = try? r.sendCommand("zrem", values: [u.key, String(describing: result)])
+        for result in results
+        {
+            switch result
+            {
+            case let dataResult as Data:
+                _ = try? r.sendCommand("zrem", values: [u.key, dataResult])
+            case let stringResult as String:
+                _ = try? r.sendCommand("zrem", values: [u.key, stringResult])
+            case let intResult as Int:
+                _ = try? r.sendCommand("zrem", values: [u.key, intResult])
+            default:
+                return RSortedSet<LiteralType>()
+                
+            }
         }
 
         return u
@@ -212,7 +264,8 @@ public final class RSortedSet<LiteralType>: RBase, ExpressibleByArrayLiteral, Ex
     {
         let inter = RSortedSet<LiteralType>()
 
-        guard let r = Auburn.redis else {
+        guard let r = Auburn.redis else
+        {
             NSLog("No redis connection")
             return
         }
@@ -221,10 +274,32 @@ public final class RSortedSet<LiteralType>: RBase, ExpressibleByArrayLiteral, Ex
         _ = try? r.sendCommand("zunionstore", values: [self.key, "2", self.key, other.key])
 
         let maybeResult = try? r.sendCommand("zrange", values: [inter.key, "0", "-1"])
-        let results = maybeResult! as! [LiteralType]
+        guard let results = maybeResult as? [RedisType], results.isEmpty == false
+            else
+        {
+            print("\nNil result from zrange command.\n")
+            return
+        }
+        
+        if "\(type(of: results))" == "NSNull"
+        {
+            print("\nNil result from zrange command.\n")
+            return
+        }
 
-        for result in results {
-            _ = try? r.sendCommand("zrem", values: [self.key, String(describing: result)])
+        for result in results
+        {
+            switch result
+            {
+                case let dataResult as Data:
+                    _ = try? r.sendCommand("zrem", values: [self.key, dataResult])
+                case let stringResult as String:
+                    _ = try? r.sendCommand("zrem", values: [self.key, stringResult])
+                case let intResult as Int:
+                    _ = try? r.sendCommand("zrem", values: [self.key, intResult])
+                default:
+                    return
+            }
         }
     }
 
@@ -234,7 +309,6 @@ public final class RSortedSet<LiteralType>: RBase, ExpressibleByArrayLiteral, Ex
         let r = Auburn.redis!
         print("ZRange: \(self.key), \(String(describing: position))")
         let maybeResult = try? r.sendCommand("zrange", values: [self.key, String(describing: position), String(describing: position)])
-        /// let maybeResult = try? r.sendCommand("zrange", values: [self.key, String(describing: position), String(describing: position)])
         
         guard let result = maybeResult as? [RedisType]
         else
@@ -248,7 +322,7 @@ public final class RSortedSet<LiteralType>: RBase, ExpressibleByArrayLiteral, Ex
         switch typeString
         {
             case "String":
-                switch result[position]
+                switch result[0]
                 {
                     case let dataResult as Data:
                         return dataResult.string as? LiteralType
@@ -258,7 +332,7 @@ public final class RSortedSet<LiteralType>: RBase, ExpressibleByArrayLiteral, Ex
                         return String(describing: result) as? LiteralType
                 }
             case "Data":
-                switch result[position]
+                switch result[0]
                 {
                     case let dataResult as Data:
                         return dataResult as? LiteralType
@@ -268,7 +342,7 @@ public final class RSortedSet<LiteralType>: RBase, ExpressibleByArrayLiteral, Ex
                         return nil
                 }
             case "Int":
-                switch result[position]
+                switch result[0]
                 {
                     case let dataResult as Data:
                         return Int(dataResult.string) as? LiteralType
@@ -280,7 +354,7 @@ public final class RSortedSet<LiteralType>: RBase, ExpressibleByArrayLiteral, Ex
                         return nil
                 }
             case "Float":
-                switch result[position]
+                switch result[0]
                 {
                     case let dataResult as Data:
                         return Float(dataResult.string) as? LiteralType
@@ -292,7 +366,7 @@ public final class RSortedSet<LiteralType>: RBase, ExpressibleByArrayLiteral, Ex
                         return nil
                 }
             case "Double":
-                switch result[position]
+                switch result[0]
                 {
                     case let dataResult as Data:
                         return Double(dataResult.string) as? LiteralType

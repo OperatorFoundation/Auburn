@@ -427,7 +427,8 @@ class AuburnTests: XCTestCase
     func testSortedSetSubscript()
     {
         let testSortedSet: RSortedSet<String> = ["cats": 0, "and": 2, "dogs": 4, "together?!??": 8]
-
+        testSortedSet.key = "testSortedSetSubscript"
+        
         XCTAssertEqual(testSortedSet["and"], 2)
         XCTAssertEqual(testSortedSet[1], "and")
     }
@@ -496,21 +497,21 @@ class AuburnTests: XCTestCase
 
         //         x.contains(e) implies x.union(y).contains(e)
 
-        print("\ntestRSortedSet1: \(testRSortedSet1)")
-        print("Count: \(testRSortedSet1.count)")
         for index in 0..<testRSortedSet1.count
         {
+            print("\ntestRsortedSet Count: \(testRSortedSet1.count) 🤺")
+            print("Index: \(index) 🤺")
+            print("Key: \(testRSortedSet1.key)")
             guard let e = testRSortedSet1[index]
             else
             {
-                print("\ntestRSortedSet1 index \(index) out of range for set length of \(testRSortedSet1.count).\n")
                 XCTFail()
                 return
             }
             
             print("Index:\(index)")
             print("Value: \(e)")
-            print("Union Count: \(testRSortedSet1.union(testRSortedSet2).count)")
+            print("Union Count: \(testRSortedSet1.union(testRSortedSet2).count)\n")
             
             XCTAssertTrue(testRSortedSet1.contains((e, 0)))
             XCTAssertTrue(testRSortedSet1.union(testRSortedSet2).contains((e, 0)))
