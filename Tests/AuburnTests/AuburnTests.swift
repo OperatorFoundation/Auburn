@@ -143,14 +143,19 @@ class AuburnTests: XCTestCase
     func testMapSubscript()
     {
         let dataValue = Data(count: 12)
-        let keyString = "aFieldKeyString"
+        let anotherDataValue = Data(count: 8)
+        let aKeyString = "aFieldKeyString"
+        let bKeyString = "bFieldKeyString"
         
-        let testMap: RMap<String, Data> = [keyString: dataValue]
+        let testMap: RMap<String, Data> = [aKeyString: dataValue]
         testMap.key = "testingRMapData"
+        testMap[bKeyString] = anotherDataValue
         
-        let swiftDictionary: Dictionary<String, Data> = [keyString: dataValue]
+        let swiftDictionary: Dictionary<String, Data> = [aKeyString: dataValue]
 
-        XCTAssertEqual(testMap[keyString], swiftDictionary[keyString])
+        XCTAssertEqual(testMap[aKeyString], swiftDictionary[aKeyString])
+        
+        XCTAssertEqual(testMap[bKeyString], anotherDataValue)
     }
 
     func testSetDelete()
