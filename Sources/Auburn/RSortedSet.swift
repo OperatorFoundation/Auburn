@@ -223,6 +223,40 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
 
         return (itemKey, Float(String(describing: result))!)
     }
+    
+    public func incrementScore(ofField fieldKey: String, byIncrement increment: Int) -> Double?
+    {
+        guard let redis = Auburn.redis
+        else
+        {
+            return nil
+        }
+        
+        let zincrbyResult = try? redis.zincrby(setKey: self.key, increment: increment, fieldKey: fieldKey)
+        guard let result = zincrbyResult as? Datable
+        else
+        {
+            return nil
+        }
+        
+        if "\(type(of: result))" == "NSNull"
+        {
+            return nil
+        }
+        
+        switch result
+        {
+            case let dataResult as Data:
+                let stringFromData = dataResult.string
+                return Double(stringFromData)
+            case let stringResult as String:
+                return Double(stringResult)
+            case let intResult as Int:
+                return Double(intResult)
+            default:
+                return nil
+        }
+    }
 
     public func update(with newMember: Element) -> Element? {
         guard let r = Auburn.redis else {

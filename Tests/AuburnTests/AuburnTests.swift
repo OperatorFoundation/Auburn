@@ -426,6 +426,21 @@ class AuburnTests: XCTestCase
         testSortedSet.key="creatingSortedSet"
         testSortedSet.delete()
     }
+    
+    func testSortedSetIncrement()
+    {
+        let field1Key = "Oak"
+        let field2Key = "Cypress"
+        let field3Key = "Willow"
+        
+        let testSortedSet: RSortedSet<String> = [field1Key: 1, field2Key: 4, field3Key: 7]
+        testSortedSet.key = "TestSortedSetIncrby"
+        
+        let newScore = testSortedSet.incrementScore(ofField: field1Key, byIncrement: 1)
+        
+        XCTAssertNotNil(newScore)
+        XCTAssertEqual(newScore!, 2)
+    }
 
     func testSortedSetMoving()
     {
@@ -520,19 +535,12 @@ class AuburnTests: XCTestCase
 
         for index in 0..<testRSortedSet1.count
         {
-            print("\ntestRsortedSet Count: \(testRSortedSet1.count) 🤺")
-            print("Index: \(index) 🤺")
-            print("Key: \(testRSortedSet1.key)")
             guard let e = testRSortedSet1[index]
             else
             {
                 XCTFail()
                 return
             }
-            
-            print("Index:\(index)")
-            print("Value: \(e)")
-            print("Union Count: \(testRSortedSet1.union(testRSortedSet2).count)\n")
             
             XCTAssertTrue(testRSortedSet1.contains((e, 0)))
             XCTAssertTrue(testRSortedSet1.union(testRSortedSet2).contains((e, 0)))
