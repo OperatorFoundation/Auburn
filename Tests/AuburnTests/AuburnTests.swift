@@ -43,6 +43,22 @@ class AuburnTests: XCTestCase
         testList.key="creating"
         testList.delete()
     }
+    
+    func testListRemoveFirst()
+    {
+        let bugs: RList<String> = ["Aphid", "Bumblebee", "Cicada", "Damselfly", "Earwig"]
+        bugs.key = "TestListBugs"
+        
+        let goldenBugs = ["Bumblebee", "Cicada", "Damselfly", "Earwig"]
+        let firstBug = bugs.removeFirst()
+        
+        XCTAssertEqual(firstBug, "Aphid")
+        XCTAssertTrue(bugs.count == 4)
+        for x in 0..<bugs.count
+        {
+            XCTAssertEqual(goldenBugs[x], bugs[x])
+        }
+    }
 
     func testListMoving()
     {

@@ -144,6 +144,72 @@ public final class RList<LiteralType>: RBase, ExpressibleByArrayLiteral, Sequenc
     public func split(maxSplits: Int, omittingEmptySubsequences: Bool, whereSeparator isSeparator: (LiteralType) throws -> Bool) rethrows -> [RListSubSequence<LiteralType>] {
         return []
     }
+    
+    public func removeFirst() -> LiteralType?
+    {
+        let r = Auburn.redis!
+        let maybeResult = try? r.lpop(key: key)
+        
+        guard let result = maybeResult
+        else
+        {
+            return nil
+        }
+        
+        let typeString = "\(LiteralType.self)"
+        
+        switch typeString
+        {
+            case "String":
+                switch result
+                {
+                    case let dataResult as Data:
+                        return dataResult.string as? LiteralType
+                    case let stringResult as String:
+                        return stringResult as? LiteralType
+                    default:
+                        return String(describing: result) as? LiteralType
+                }
+            case "Int":
+                switch result
+                {
+                    case let dataResult as Data:
+                        return Int(dataResult.string) as? LiteralType
+                    case let stringResult as String:
+                        return Int(stringResult) as? LiteralType
+                    case let intResult as Int:
+                        return intResult as? LiteralType
+                    default:
+                        return nil
+                }
+            case "Float":
+                switch result
+                {
+                    case let dataResult as Data:
+                        return Float(dataResult.string) as? LiteralType
+                    case let stringResult as String:
+                        return Float(stringResult) as? LiteralType
+                    case let floatResult as Float:
+                        return floatResult as? LiteralType
+                    default:
+                        return nil
+                }
+            case "Double":
+                switch result
+                {
+                    case let dataResult as Data:
+                        return Double(dataResult.string) as? LiteralType
+                    case let stringResult as String:
+                        return Double(stringResult) as? LiteralType
+                    case let floatResult as Float:
+                        return floatResult as? LiteralType
+                    default:
+                        return nil
+                }
+            default:
+                return nil
+        }
+    }
 
     public subscript(position: Index) -> LiteralType?
     {
