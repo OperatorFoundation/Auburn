@@ -20,7 +20,7 @@ public final class RSet<LiteralType>: RBase, ExpressibleByArrayLiteral, Equatabl
         }
     }
 
-    var count: Index {
+    public var count: Index {
         get {
             let r = Auburn.redis!
             let maybeResult = try? r.sendCommand("scard", values: [self.key])

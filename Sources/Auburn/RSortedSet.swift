@@ -14,7 +14,7 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
     public typealias Element = (LiteralType, Float)
     public typealias Index = Int
 
-    var count: Index
+    public var count: Index
     {
         get {
             let r = Auburn.redis!
