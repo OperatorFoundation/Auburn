@@ -59,6 +59,8 @@ public class RMap<K: Datable, V: Datable>: RBase, ExpressibleByDictionaryLiteral
                     return dataResult.string as? V
                 case let stringResult as String:
                     return stringResult as? V
+                case let intResult as Int:
+                    return String(intResult) as? V
                 default:
                     return String(describing: result) as? V
                 }
@@ -81,11 +83,10 @@ public class RMap<K: Datable, V: Datable>: RBase, ExpressibleByDictionaryLiteral
                 case let dataResult as Data:
                     let dataToFLoat = Float(bitPattern: UInt32(bigEndian: dataResult.withUnsafeBytes { $0.pointee } ))
                     return dataToFLoat as? V
-                //return Float(dataResult.string) as? V
                 case let stringResult as String:
                     return Float(stringResult) as? V
-                case let floatResult as Float:
-                    return floatResult as? V
+                case let intResult as Int:
+                    return Float(intResult) as? V
                 default:
                     return nil
                 }
@@ -96,20 +97,22 @@ public class RMap<K: Datable, V: Datable>: RBase, ExpressibleByDictionaryLiteral
                     return Double(dataResult.string) as? V
                 case let stringResult as String:
                     return Double(stringResult) as? V
-                case let doubleResult as Double:
-                    return doubleResult as? V
+                case let intResult as Int:
+                    return Double(intResult) as? V
                 default:
                     return nil
                 }
             case "Data":
                 switch result
                 {
-                case let dataResult as Data:
-                    return dataResult as? V
-                case let stringResult as String:
-                    return stringResult.data as? V
-                default:
-                    return nil
+                    case let dataResult as Data:
+                        return dataResult as? V
+                    case let stringResult as String:
+                        return stringResult.data as? V
+                    case let intResult as Int:
+                        return intResult.data as? V
+                    default:
+                        return nil
                 }
             default:
                 return nil
