@@ -16,14 +16,33 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
 
     public var count: Index
     {
-        get {
+        get
+        {
             let r = Auburn.redis!
             let maybeResult = try? r.sendCommand("zcard", values: [self.key])
-            guard let result = maybeResult else {
+            guard let result = maybeResult
+            else
+            {
                 return 0
             }
 
-            return result as! Int
+            if "\(type(of: result))" == "NSNull"
+            {
+                return 0
+            }
+            
+            switch result
+            {
+            case let dataResult as Data:
+                let stringResult = dataResult.string
+                return Int(stringResult) ?? 0
+            case let stringResult as String:
+                return Int(stringResult) ?? 0
+            case let intResult as Int:
+                return intResult
+            default:
+                return 0
+            }
         }
     }
 
