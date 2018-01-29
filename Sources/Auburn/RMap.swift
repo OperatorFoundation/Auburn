@@ -66,7 +66,8 @@ public class RMap<K: Datable, V: Datable>: RBase, ExpressibleByDictionaryLiteral
                 switch result
                 {
                 case let dataResult as Data:
-                    return Int(data: dataResult) as? V
+                    let stringValue = dataResult.string
+                    return Int(stringValue) as? V
                 case let stringResult as String:
                     return Int(stringResult) as? V
                 case let intResult as Int:
