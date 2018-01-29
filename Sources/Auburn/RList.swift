@@ -88,15 +88,35 @@ public final class RList<LiteralType>: RBase, ExpressibleByArrayLiteral, Sequenc
     public var startIndex: RList<LiteralType>.Index = 0
     public var endIndex: RList<LiteralType>.Index = -1
 
-    public var count: Index {
-        get {
+    public var count: Index
+    {
+        get
+        {
             let r = Auburn.redis!
             let maybeResult = try? r.sendCommand("llen", values: [self.key])
-            guard let result = maybeResult else {
+            
+            guard let result = maybeResult else
+            {
                 return 0
             }
-
-            return result as! Int
+            
+            if "\(type(of: result))" == "NSNull"
+            {
+                return 0
+            }
+            
+            switch result
+            {
+            case let dataResult as Data:
+                let stringResult = dataResult.string
+                return Int(stringResult) ?? 0
+            case let stringResult as String:
+                return Int(stringResult) ?? 0
+            case let intResult as Int:
+                return intResult
+            default:
+                return 0
+            }
         }
     }
 
