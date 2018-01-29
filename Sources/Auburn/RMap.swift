@@ -125,4 +125,64 @@ public class RMap<K: Datable, V: Datable>: RBase, ExpressibleByDictionaryLiteral
             _ = try? r.hset(key: self.key, field: String(describing: key), value: fieldValue)
         }
     }
+    
+    public func increment(field fieldKey: K) -> V?
+    {
+        guard let redis = Auburn.redis
+            else
+        {
+            return nil
+        }
+        
+        let hincrbyResult = try? redis.hincrby(hashKey: self.key, increment: 1, fieldKey: fieldKey)
+        guard let result = hincrbyResult as? Datable
+            else
+        {
+            return nil
+        }
+        
+        if "\(type(of: result))" == "NSNull"
+        {
+            return nil
+        }
+        
+        let resultAsInt:Int?
+        
+        switch result
+        {
+        case let dataResult as Data:
+            let stringFromData = dataResult.string
+            resultAsInt = Int(stringFromData)
+        case let stringResult as String:
+            resultAsInt = Int(stringResult)
+        case let intResult as Int:
+            resultAsInt = intResult
+        default:
+            return nil
+        }
+        
+        guard let actualInt = resultAsInt
+        else
+        {
+            return nil
+        }
+        
+        let typeString = "\(V.self)"
+        switch typeString
+        {
+        case "Int":
+            return actualInt as! V
+        case "String":
+            return String(actualInt) as! V
+        case "Data":
+            return actualInt.data as! V
+        case "Float":
+            return Float(actualInt) as! V
+        case "Double":
+            return Double(actualInt) as! V
+       default:
+            return nil
+        }
+    }
+    
 }

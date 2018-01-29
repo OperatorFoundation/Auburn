@@ -173,6 +173,21 @@ class AuburnTests: XCTestCase
         
         XCTAssertEqual(testMap[bKeyString], anotherDataValue)
     }
+    
+    func testMapIncrement()
+    {
+        let field1Key = "Oak"
+        let field2Key = "Cypress"
+        let field3Key = "Willow"
+        
+        let testMap: RMap<String, Int> = [field1Key: 1, field2Key: 4, field3Key: 7]
+        testMap.key = "TestMapIncrby"
+        
+        let newScore = testMap.increment(field: field1Key)
+        
+        XCTAssertNotNil(newScore)
+        XCTAssertEqual(newScore!, 2)
+    }
 
     func testSetDelete()
     {
