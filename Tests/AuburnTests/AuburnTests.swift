@@ -44,6 +44,14 @@ class AuburnTests: XCTestCase
         testList.delete()
     }
     
+    func testListCount()
+    {
+        let bugs: RList<String> = ["Aphid", "Bumblebee", "Cicada", "Damselfly", "Earwig"]
+        bugs.key = "TestListCountBugs"
+        
+        XCTAssertEqual(bugs.count, 5)
+    }
+    
     func testListRemoveFirst()
     {
         let bugs: RList<String> = ["Aphid", "Bumblebee", "Cicada", "Damselfly", "Earwig"]

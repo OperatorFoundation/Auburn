@@ -93,7 +93,7 @@ public final class RList<LiteralType>: RBase, ExpressibleByArrayLiteral, Sequenc
         get
         {
             let r = Auburn.redis!
-            let maybeResult = try? r.sendCommand("llen", values: [self.key])
+            let maybeResult = try? r.llen(key: self.key)
             
             guard let result = maybeResult else
             {
@@ -105,18 +105,13 @@ public final class RList<LiteralType>: RBase, ExpressibleByArrayLiteral, Sequenc
                 return 0
             }
             
-            switch result
+            guard let intResult = result as? Int
+            else
             {
-            case let dataResult as Data:
-                let stringResult = dataResult.string
-                return Int(stringResult) ?? 0
-            case let stringResult as String:
-                return Int(stringResult) ?? 0
-            case let intResult as Int:
-                return intResult
-            default:
                 return 0
             }
+            
+            return intResult
         }
     }
 
@@ -172,6 +167,11 @@ public final class RList<LiteralType>: RBase, ExpressibleByArrayLiteral, Sequenc
         
         guard let result = maybeResult
         else
+        {
+            return nil
+        }
+        
+        if "\(type(of: result))" == "NSNull"
         {
             return nil
         }
