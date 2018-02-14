@@ -243,7 +243,7 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
         return (itemKey, Float(String(describing: result))!)
     }
     
-    public func incrementScore(ofField fieldKey: String, byIncrement increment: Int) -> Double?
+    public func incrementScore(ofField fieldKey: LiteralType, byIncrement increment: Int) -> Double?
     {
         guard let redis = Auburn.redis
         else
