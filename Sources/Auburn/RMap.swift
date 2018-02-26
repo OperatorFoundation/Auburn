@@ -175,15 +175,15 @@ public class RMap<K: Datable, V: Datable>: RBase, ExpressibleByDictionaryLiteral
         switch typeString
         {
         case "Int":
-            return actualInt as! V
+            return (actualInt as! V)
         case "String":
-            return String(actualInt) as! V
+            return (String(actualInt) as! V)
         case "Data":
-            return actualInt.data as! V
+            return (actualInt.data as! V)
         case "Float":
-            return Float(actualInt) as! V
+            return (Float(actualInt) as! V)
         case "Double":
-            return Double(actualInt) as! V
+            return (Double(actualInt) as! V)
        default:
             return nil
         }
