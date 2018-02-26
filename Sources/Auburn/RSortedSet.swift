@@ -46,6 +46,40 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
         }
     }
 
+//    public var first: Element? {
+//    }
+
+    public var last: Element? {
+        guard let r = Auburn.redis else {
+            return nil
+        }
+        
+        let maybeResults = try? r.zrevrange(setKey: self.key, minIndex: 0, maxIndex: 1, withScores: true)
+        guard let results = maybeResults else {
+            return nil
+        }
+        
+        switch results {
+            case let resultsArray as Array<RedisType>:
+                let item = resultsArray[0]
+                let score = resultsArray[1]
+                
+                switch item {
+                    case let typedItem as LiteralType:
+                        switch score {
+                            case let floatScore as Float:
+                                return (typedItem, floatScore)
+                            default:
+                                return nil
+                        }
+                    default:
+                        return nil
+                }
+            default:
+                return nil
+        }
+    }
+    
     public convenience init(arrayLiteral elements: LiteralType...)
     {
         self.init()
