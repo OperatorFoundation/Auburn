@@ -54,7 +54,7 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
             return nil
         }
         
-        let maybeResults = try? r.zrevrange(setKey: self.key, minIndex: 0, maxIndex: 1, withScores: true)
+        let maybeResults = try? r.zrevrange(setKey: self.key, minIndex: 0, maxIndex: 0, withScores: true)
         guard let results = maybeResults else {
             return nil
         }
@@ -64,14 +64,27 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
                 let item = resultsArray[0]
                 let score = resultsArray[1]
                 
-                switch item {
-                    case let typedItem as LiteralType:
-                        switch score {
-                            case let floatScore as Float:
-                                return (typedItem, floatScore)
+                switch score {
+                    case let dataScore as Data:
+                        let stringScore = dataScore.string
+                        let floatScore = Float(stringScore)
+
+                        switch item {
+                            case let dataItem as Data:
+                                let stringItem = dataItem.string
+                                
+                                let returnType = "\(LiteralType.self)"
+                                switch returnType {
+                                    case "Int":
+                                        let intItem = Int(stringItem)
+                                        return (intItem, floatScore) as! Element
+                                    default:
+                                        return nil
+                                }
                             default:
                                 return nil
                         }
+
                     default:
                         return nil
                 }
