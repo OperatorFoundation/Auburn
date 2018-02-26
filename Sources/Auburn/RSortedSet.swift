@@ -76,7 +76,10 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
                                 switch returnType {
                                     case "Int":
                                         let stringItem = dataItem.string
-                                        let intItem = Int(stringItem)
+                                        let maybeIntItem = Int(stringItem)
+                                        guard let intItem = maybeIntItem else {
+                                            return nil
+                                        }
                                         return (intItem, floatScore) as! Element
                                     case "Data":
                                         return (dataItem, floatScore) as! Element
