@@ -59,8 +59,17 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
             return nil
         }
         
+        if "\(type(of: results))" == "NSNull"
+        {
+            return nil
+        }
+        
         switch results {
             case let resultsArray as Array<RedisType>:
+                if resultsArray.count < 2{
+                    return nil
+                }
+                
                 let item = resultsArray[0]
                 let score = resultsArray[1]
                 
