@@ -71,13 +71,15 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
 
                         switch item {
                             case let dataItem as Data:
-                                let stringItem = dataItem.string
                                 
                                 let returnType = "\(LiteralType.self)"
                                 switch returnType {
                                     case "Int":
+                                        let stringItem = dataItem.string
                                         let intItem = Int(stringItem)
                                         return (intItem, floatScore) as! Element
+                                    case "Data":
+                                        return (dataItem, floatScore) as! Element
                                     default:
                                         return nil
                                 }
