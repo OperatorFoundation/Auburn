@@ -1,3 +1,4 @@
+import Foundation
 import RedShot
 
 public class Auburn {
@@ -10,5 +11,27 @@ public class Auburn {
 
             return _redis
         }
+    }
+    
+    static private let queue: DispatchQueue = DispatchQueue(label: "RedisTransactions")
+    
+    static public func transaction(_ block: (Redis) throws -> Void) -> [RedisType]? {
+        var result: [RedisType]?
+        
+        guard let r = Auburn.redis else {
+            NSLog("No redis connection")
+            return nil
+        }
+
+        queue.sync {
+            do {
+                try r.multi()
+                try block(r)
+                result = try r.exec()
+            } catch {
+            }
+        }
+        
+        return result
     }
 }

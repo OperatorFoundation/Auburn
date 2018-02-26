@@ -32,7 +32,6 @@ class AuburnTests: XCTestCase
     
     func testListDelete()
     {
-        
         let testList: RList<String> = ["cats", "and", "dogs", "together?!??"]
         testList.delete()
     }
@@ -679,5 +678,20 @@ class AuburnTests: XCTestCase
 
         XCTAssertTrue(testRSortedSet2.isSubset(of: testRSortedSet2))
         XCTAssertFalse(testRSortedSet2.isStrictSubset(of: testRSortedSet2))
+    }
+    
+    func testTransactions()
+    {
+        let testList: RList<String> = ["cats", "and", "dogs", "together?!??"]
+        let result = Auburn.transaction {
+            (r) in
+            
+            let _ = testList.append("1234")
+            let _ = testList.removeFirst()
+            let _ = testList.count
+        }
+        
+        NSLog("transaction result: \(String(describing: result))")
+        XCTAssertNotNil(result)
     }
 }
