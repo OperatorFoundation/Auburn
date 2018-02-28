@@ -421,7 +421,6 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
     public subscript(position: Int) -> LiteralType?
     {
         let r = Auburn.redis!
-        print("ZRange: \(self.key), \(String(describing: position))")
         let maybeResult = try? r.sendCommand("zrange", values: [self.key, String(describing: position), String(describing: position)])
         
         guard let result = maybeResult as? [RedisType]
@@ -431,8 +430,6 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
         }
         
         let typeString = "\(LiteralType.self)"
-        print("Subscript Result Count:\(result.count)")
-        print("Requested position: \(position)")
         switch typeString
         {
             case "String":
