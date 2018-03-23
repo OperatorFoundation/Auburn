@@ -490,6 +490,32 @@ class AuburnTests: XCTestCase
         XCTAssertEqual(testSortedSet["and"], 2)
         XCTAssertEqual(testSortedSet[1], "and")
     }
+    
+    func testSortedSetLast()
+    {
+        let catsString = "cats"
+        let andString = "and"
+        let dogsString = "dogs"
+        let togetherString = "together?!??"
+        let stringSetKey = "stringSortedSet"
+        let dataSetKey = "dataSortedSet"
+        let intSetKey = "intSortedSet"
+        
+        let stringSortedSet: RSortedSet<String> = [catsString: 0, andString: 2, dogsString: 4, togetherString: 8]
+        stringSortedSet.key = stringSetKey
+        XCTAssertEqual(stringSortedSet.last?.0, togetherString)
+        XCTAssertEqual(stringSortedSet.last?.1, 8)
+        
+        let dataSortedSet: RSortedSet<Data> = [catsString.data: 0, andString.data: 2, dogsString.data: 4, togetherString.data: 8]
+        dataSortedSet.key = dataSetKey
+        //XCTAssertEqual(dataSortedSet.last?.0, togetherString.data)
+        XCTAssertEqual(dataSortedSet.last?.1, 8)
+        
+        let intSortedSet: RSortedSet<Int> = [1: 0, 2: 2, 3: 4, 4: 8]
+        intSortedSet.key = intSetKey
+        XCTAssertEqual(intSortedSet.last?.0, 4)
+        XCTAssertEqual(intSortedSet.last?.1, 8)
+    }
 
     func testSortedSetAlgebraMethods()
     {
