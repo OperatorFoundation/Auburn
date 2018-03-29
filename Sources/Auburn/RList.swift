@@ -81,7 +81,7 @@ public final class RList<LiteralType>: RBase, ExpressibleByArrayLiteral, Sequenc
     public typealias ArrayLiteralElement = LiteralType
     public typealias Index = Int
     public typealias Element = LiteralType
-    public typealias SubSequence = RListSubSequence<LiteralType>
+    public typealias SubSequence = AnySequence<LiteralType>
 //    typealias SubSequence<LiteralType> = Slice<RList<LiteralType>> where SubSequence<LiteralType>.Index == Index, SubSequence<LiteralType>.IndexDistance == IndexDistance
     public typealias Iterator = RListIterator<LiteralType>
 
