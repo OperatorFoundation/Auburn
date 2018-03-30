@@ -511,4 +511,23 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
 
         return result.makeIterator()
     }
+    
+    public func addSubsequences(sequence: Data) -> Int? {
+        let r = Auburn.redis!
+        let maybeResult = try? r.sendCommand("subsequences.add", values: [self.key, sequence])
+        
+        guard let result = maybeResult
+            else
+        {
+            return nil
+        }
+        
+        switch result
+        {
+        case let intResult as Int:
+            return intResult
+        default:
+            return nil
+        }
+    }
 }
