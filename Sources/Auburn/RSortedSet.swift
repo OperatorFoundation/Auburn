@@ -530,4 +530,23 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
             return nil
         }
     }
+    
+    public func addSubsequences(sequence: Data, offset: Int) -> Int? {
+        let r = Auburn.redis!
+        let maybeResult = try? r.sendCommand("subsequences.addOffset", values: [self.key, sequence, offset])
+        
+        guard let result = maybeResult
+            else
+        {
+            return nil
+        }
+        
+        switch result
+        {
+        case let intResult as Int:
+            return intResult
+        default:
+            return nil
+        }
+    }
 }
