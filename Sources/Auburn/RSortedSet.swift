@@ -209,6 +209,20 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
 
         return u
     }
+    
+    public func weightedUnion(_ other: RSortedSet<LiteralType>, weight: Double, otherWeight: Double) -> RSortedSet<LiteralType>
+    {
+        let u = RSortedSet<LiteralType>()
+        
+        guard let r = Auburn.redis else {
+            NSLog("No redis connection")
+            return u
+        }
+        
+        _ = try? r.sendCommand("zunionstore", values: [u.key, "2", self.key, other.key, "weights", weight.string, otherWeight.string])
+        
+        return u
+    }
 
     public func intersection(_ other: RSortedSet<LiteralType>) -> RSortedSet<LiteralType> {
         let inter = RSortedSet<LiteralType>()

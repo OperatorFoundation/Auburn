@@ -431,7 +431,7 @@ class AuburnTests: XCTestCase
 
     func testSortedSetDelete()
     {
-                let testSortedSet: RSortedSet<String> = ["cats", "and", "dogs", "together?!??"]
+        let testSortedSet: RSortedSet<String> = ["cats", "and", "dogs", "together?!??"]
         testSortedSet.delete()
     }
 
@@ -515,6 +515,15 @@ class AuburnTests: XCTestCase
         intSortedSet.key = intSetKey
         XCTAssertEqual(intSortedSet.last?.0, 4)
         XCTAssertEqual(intSortedSet.last?.1, 8)
+    }
+    
+    func testSortedSetWeightedUnion()
+    {
+        let testRSortedSet1: RSortedSet<String> = ["cats", "and", "dogs", "together?!??"]
+        let testRSortedSet2: RSortedSet<String> = ["cats", "are", "never", "dogs"]
+        let goldenUnion: RSortedSet<String> = ["cats", "are", "dogs", "and", "never", "together?!??"]
+        
+        XCTAssertEqual(testRSortedSet1.weightedUnion(testRSortedSet2, weight: 0.5, otherWeight: 2), goldenUnion)
     }
 
     func testSortedSetAlgebraMethods()
