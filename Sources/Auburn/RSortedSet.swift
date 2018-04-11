@@ -140,6 +140,18 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
             _ = try? r.sendCommand("zadd", values: [key, String(describing: value), String(describing: itemKey)])
         }
     }
+    
+    public convenience init(unionOf firstSetKey: String, scoresMultipliedBy firstWeight: Double, secondSetKey: String, scoresMultipliedBy secondWeight: Double, newSetKey key: String)
+    {
+        self.init(key: key)
+        self.delete()
+        
+        guard let r = Auburn.redis else {
+            NSLog("No redis connection")
+            return
+        }
+        _ = try? r.zunionstore(newSetKey: key, firstSetKey: firstSetKey, secondSetKey: secondSetKey, firstWeight: firstWeight, secondWeight: secondWeight)
+    }
 
     public static func ==(lhs: RSortedSet<LiteralType>, rhs: RSortedSet<LiteralType>) -> Bool {
         guard lhs.count == rhs.count else {
@@ -205,7 +217,7 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
             return u
         }
 
-        _ = try? r.sendCommand("zunionstore", values: [u.key, "2", self.key, other.key])
+        _ = try? r.zunionstore(newSetKey: u.key, firstSetKey: self.key, secondSetKey: other.key, firstWeight: 1, secondWeight: 1)
 
         return u
     }
@@ -219,7 +231,7 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
             return u
         }
         
-        _ = try? r.sendCommand("zunionstore", values: [u.key, "2", self.key, other.key, "weights", weight.string, otherWeight.string])
+        _ = try? r.zunionstore(newSetKey: u.key, firstSetKey: self.key, secondSetKey: other.key, firstWeight: weight, secondWeight: otherWeight)
         
         return u
     }

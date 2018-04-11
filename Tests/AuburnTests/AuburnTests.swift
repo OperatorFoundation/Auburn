@@ -525,6 +525,19 @@ class AuburnTests: XCTestCase
         
         XCTAssertEqual(testRSortedSet1.weightedUnion(testRSortedSet2, weight: 0.5, otherWeight: 2), goldenUnion)
     }
+    
+    func testSortedSetInitWithUnion()
+    {
+        let testRSortedSet1: RSortedSet<String> = ["cats", "and", "dogs", "together?!??"]
+        let testRSortedSet2: RSortedSet<String> = ["cats", "are", "never", "dogs"]
+        let goldenUnion: RSortedSet<String> = ["cats", "are", "dogs", "and", "never", "together?!??"]
+        let newSet: RSortedSet<String> = RSortedSet(unionOf: testRSortedSet1.key, scoresMultipliedBy: 0.5, secondSetKey: testRSortedSet2.key, scoresMultipliedBy: 2, newSetKey: "NewSetFromUnionKey")
+        
+        XCTAssertEqual(newSet, goldenUnion)
+        testRSortedSet1.delete()
+        testRSortedSet2.delete()
+        newSet.delete()
+    }
 
     func testSortedSetAlgebraMethods()
     {
@@ -726,7 +739,7 @@ class AuburnTests: XCTestCase
             let _ = testList.count
         }
         
-        NSLog("transaction result: \(String(describing: result))")
+        NSLog("\ntransaction result: \(String(describing: result))")
         XCTAssertNotNil(result)
     }
 }
