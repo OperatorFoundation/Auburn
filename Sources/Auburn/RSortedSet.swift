@@ -45,17 +45,19 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
             }
         }
     }
-
-//    public var first: Element? {
-//    }
-
-    public var last: Element? {
-        guard let r = Auburn.redis else {
+    
+    public var first: Element?
+    {
+        guard let r = Auburn.redis
+            else
+        {
             return nil
         }
         
-        let maybeResults = try? r.zrevrange(setKey: self.key, minIndex: 0, maxIndex: 0, withScores: true)
-        guard let results = maybeResults else {
+        let maybeResults = try? r.zrange(setKey: self.key, minIndex: 0, maxIndex: 0, withScores: true)
+        guard let results = maybeResults
+            else
+        {
             return nil
         }
         
@@ -64,51 +66,31 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
             return nil
         }
         
-        switch results {
-            case let resultsArray as Array<RedisType>:
-                if resultsArray.count < 2{
-                    return nil
-                }
-                
-                let item = resultsArray[0]
-                let score = resultsArray[1]
-                
-                switch score {
-                    case let dataScore as Data:
-                        let stringScore = dataScore.string
-                        let floatScore = Float(stringScore)
+        return processZrange(results: results)
+    }
 
-                        switch item {
-                            case let dataItem as Data:
-                                
-                                let returnType = "\(LiteralType.self)"
-                                switch returnType {
-                                    case "Int":
-                                        let stringItem = dataItem.string
-                                        let maybeIntItem = Int(stringItem)
-                                        guard let intItem = maybeIntItem
-                                        else {
-                                            return nil
-                                        }
-                                        return ((intItem, floatScore) as! Element)
-                                    case "String":
-                                        let stringItem = dataItem.string
-                                        return ((stringItem, floatScore) as! Element)
-                                    case "Data":
-                                        return ((dataItem, floatScore) as! Element)
-                                    default:
-                                        return nil
-                                }
-                            default:
-                                return nil
-                        }
-
-                    default:
-                        return nil
-                }
-            default:
-                return nil
+    public var last: Element?
+    {
+        guard let r = Auburn.redis
+            else
+        {
+            return nil
         }
+        
+        let maybeResults = try? r.zrevrange(setKey: self.key, minIndex: 0, maxIndex: 0, withScores: true)
+        
+        guard let results = maybeResults
+            else
+        {
+            return nil
+        }
+        
+        if "\(type(of: results))" == "NSNull"
+        {
+            return nil
+        }
+        
+        return processZrange(results: results)
     }
     
     public convenience init(arrayLiteral elements: LiteralType...)
@@ -575,4 +557,54 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
             return nil
         }
     }
+    
+    func processZrange(results: RedisType) -> Element?
+    {
+        switch results {
+        case let resultsArray as Array<RedisType>:
+            if resultsArray.count < 2{
+                return nil
+            }
+            
+            let item = resultsArray[0]
+            let score = resultsArray[1]
+            
+            switch score {
+            case let dataScore as Data:
+                let stringScore = dataScore.string
+                let floatScore = Float(stringScore)
+                
+                switch item {
+                case let dataItem as Data:
+                    
+                    let returnType = "\(LiteralType.self)"
+                    switch returnType {
+                    case "Int":
+                        let stringItem = dataItem.string
+                        let maybeIntItem = Int(stringItem)
+                        guard let intItem = maybeIntItem
+                            else {
+                                return nil
+                        }
+                        return ((intItem, floatScore) as! Element)
+                    case "String":
+                        let stringItem = dataItem.string
+                        return ((stringItem, floatScore) as! Element)
+                    case "Data":
+                        return ((dataItem, floatScore) as! Element)
+                    default:
+                        return nil
+                    }
+                default:
+                    return nil
+                }
+                
+            default:
+                return nil
+            }
+        default:
+            return nil
+        }
+    }
+    
 }

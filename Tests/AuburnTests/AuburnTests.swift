@@ -491,7 +491,7 @@ class AuburnTests: XCTestCase
         XCTAssertEqual(testSortedSet[1], "and")
     }
     
-    func testSortedSetLast()
+    func testSortedSetFirstAndLast()
     {
         let catsString = "cats"
         let andString = "and"
@@ -505,16 +505,26 @@ class AuburnTests: XCTestCase
         stringSortedSet.key = stringSetKey
         XCTAssertEqual(stringSortedSet.last?.0, togetherString)
         XCTAssertEqual(stringSortedSet.last?.1, 8)
+        XCTAssertEqual(stringSortedSet.first?.0, catsString)
+        XCTAssertEqual(stringSortedSet.first?.1, 0)
         
-        let dataSortedSet: RSortedSet<Data> = [catsString.data: 0, andString.data: 2, dogsString.data: 4, togetherString.data: 8]
+        //TODO: Issue here with string to data conversion
+        // sorted set sees both catsString.data and dogsString.data as the same key
+        print("\nCats String is a data!: \(catsString.data) 🐈 🐈 🐈")
+        print("Dogs String is a data!: \(dogsString.data) 🐕 🐕 🐕")
+        print("Fix me <3\n")
+        
+        let dataSortedSet: RSortedSet<Data> = [catsString.data: 0, andString.data: 2, dogsString.data(using: String.Encoding.utf8)!: 4, togetherString.data: 8]
         dataSortedSet.key = dataSetKey
-        //XCTAssertEqual(dataSortedSet.last?.0, togetherString.data)
+        XCTAssertEqual(dataSortedSet.first?.1, 0)
         XCTAssertEqual(dataSortedSet.last?.1, 8)
         
-        let intSortedSet: RSortedSet<Int> = [1: 0, 2: 2, 3: 4, 4: 8]
+        let intSortedSet: RSortedSet<Int> = [2: 2, 1: 0, 3: 4, 4: 8]
         intSortedSet.key = intSetKey
         XCTAssertEqual(intSortedSet.last?.0, 4)
         XCTAssertEqual(intSortedSet.last?.1, 8)
+        XCTAssertEqual(intSortedSet.first?.0, 1)
+        XCTAssertEqual(intSortedSet.first?.1, 0)
     }
     
     func testSortedSetWeightedUnion()
