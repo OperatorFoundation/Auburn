@@ -292,7 +292,7 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
 
         let (itemKey, score) = newMember
 
-        let maybeResult = try? r.sendCommand("zadd", values: [self.key, String(describing: score), String(describing: itemKey)])
+        let maybeResult = try? r.sendCommand("zadd", values: [self.key, score, itemKey])
         guard let result = maybeResult else {
             return (false, newMember)
         }
@@ -308,7 +308,7 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
 
         let (itemKey, _) = member
 
-        let maybeResult = try? r.sendCommand("zrem", values: [self.key, String(describing: itemKey)])
+        let maybeResult = try? r.sendCommand("zrem", values: [self.key, itemKey])
         guard let result = maybeResult else {
             return nil
         }
