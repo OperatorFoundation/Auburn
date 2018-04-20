@@ -27,7 +27,7 @@ public class RMap<K: Datable, V: Datable>: RBase, ExpressibleByDictionaryLiteral
 
         for (itemKey, value) in elements
         {
-            _ = try? r.hset(key: key, field: String(describing: itemKey), value: value)
+            _ = try? r.hset(key: key, field: itemKey, value: value)
         }
     }
 
@@ -62,7 +62,7 @@ public class RMap<K: Datable, V: Datable>: RBase, ExpressibleByDictionaryLiteral
                 case let intResult as Int:
                     return String(intResult) as? V
                 default:
-                    return String(describing: result) as? V
+                    return result as? V
                 }
             case "Int":
                 switch result
@@ -126,7 +126,7 @@ public class RMap<K: Datable, V: Datable>: RBase, ExpressibleByDictionaryLiteral
             {
                 return
             }
-            _ = try? r.hset(key: self.key, field: String(describing: key), value: fieldValue)
+            _ = try? r.hset(key: self.key, field: key, value: fieldValue)
         }
     }
     

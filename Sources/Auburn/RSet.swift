@@ -7,8 +7,9 @@
 
 import Foundation
 import RedShot
+import Datable
 
-public final class RSet<LiteralType>: RBase, ExpressibleByArrayLiteral, Equatable, SetAlgebra, Sequence {
+public final class RSet<LiteralType: Datable>: RBase, ExpressibleByArrayLiteral, Equatable, SetAlgebra, Sequence {
     public typealias Element = LiteralType
     public typealias Iterator = IndexingIterator<[LiteralType]>
     public typealias Index = Int
@@ -43,7 +44,7 @@ public final class RSet<LiteralType>: RBase, ExpressibleByArrayLiteral, Equatabl
         _ = try? r.sendCommand("del", values: [self.key])
 
         for value in elements {
-            _ = try?r.sadd(key: self.key, values: String(describing: value))
+            _ = try?r.sadd(key: self.key, values: value)
         }
     }
 
@@ -63,12 +64,12 @@ public final class RSet<LiteralType>: RBase, ExpressibleByArrayLiteral, Equatabl
             return false
         }
 
-        let maybeResult = try? r.sendCommand("sismember", values: [key, String(describing: member)])
-        guard let result = maybeResult else {
+        let maybeResult = try? r.sendCommand("sismember", values: [key, member])
+        guard let result = maybeResult as? Int else {
             return false
         }
 
-        return String(describing: result) == "1"
+        return result == 1
     }
 
     public func union(_ other: RSet<LiteralType>) -> RSet<LiteralType>
@@ -121,12 +122,12 @@ public final class RSet<LiteralType>: RBase, ExpressibleByArrayLiteral, Equatabl
             return (false, newMember)
         }
 
-        let maybeResult = try? r.sadd(key: self.key, values: String(describing: newMember))
-        guard let result = maybeResult else {
+        let maybeResult = try? r.sadd(key: self.key, values: newMember)
+        guard let result = maybeResult as? Int else {
             return (false, newMember)
         }
 
-        return (String(describing: result) == "1", newMember)
+        return (result == 1, newMember)
     }
 
     public func remove(_ member: LiteralType) -> LiteralType? {
@@ -134,12 +135,12 @@ public final class RSet<LiteralType>: RBase, ExpressibleByArrayLiteral, Equatabl
             return nil
         }
 
-        let maybeResult = try? r.sendCommand("srem", values: [self.key, String(describing: member)])
-        guard let result = maybeResult else {
+        let maybeResult = try? r.sendCommand("srem", values: [self.key, member])
+        guard let result = maybeResult as? Int else {
             return nil
         }
 
-        if String(describing: result) == "1" {
+        if result == 1 {
             return member
         } else {
             return nil
@@ -151,12 +152,12 @@ public final class RSet<LiteralType>: RBase, ExpressibleByArrayLiteral, Equatabl
             return nil
         }
 
-        let maybeResult = try? r.sadd(key: self.key, values: String(describing: newMember))
-        guard let result = maybeResult else {
+        let maybeResult = try? r.sadd(key: self.key, values: newMember)
+        guard let result = maybeResult as? Int else {
             return nil
         }
 
-        if String(describing: result) == "1" {
+        if result == 1 {
             return newMember
         } else {
             return nil
@@ -219,7 +220,7 @@ public final class RSet<LiteralType>: RBase, ExpressibleByArrayLiteral, Equatabl
                     case let stringResult as String:
                         return stringResult as? LiteralType
                     default:
-                        return String(describing: result) as? LiteralType
+                        return result as? LiteralType
                 }
             case "Data":
                 switch result[position]
@@ -285,7 +286,7 @@ public final class RSet<LiteralType>: RBase, ExpressibleByArrayLiteral, Equatabl
 //            return nil
 //        }
 //
-//        return String(describing: result[position]) as? LiteralType
+//        return result[position] as? LiteralType
 //    }
 
     public func index(after i: Index) -> Index {

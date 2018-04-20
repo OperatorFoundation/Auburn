@@ -7,8 +7,9 @@
 
 import Foundation
 import RedShot
+import Datable
 
-public struct RListSubSequence<LiteralType>: Sequence {
+public struct RListSubSequence<LiteralType: Datable>: Sequence {
     public typealias Element = LiteralType
     public typealias Iterator = RListIterator<LiteralType>
     public typealias Index = Int
@@ -34,7 +35,7 @@ public struct RListSubSequence<LiteralType>: Sequence {
     }
 }
 
-public struct RListIterator<LiteralType>: IteratorProtocol {
+public struct RListIterator<LiteralType: Datable>: IteratorProtocol {
     public typealias Element = LiteralType
     public typealias Index = Int
 
@@ -77,7 +78,7 @@ public struct RListIterator<LiteralType>: IteratorProtocol {
     }
 }
 
-public final class RList<LiteralType>: RBase, ExpressibleByArrayLiteral, Sequence {
+public final class RList<LiteralType: Datable>: RBase, ExpressibleByArrayLiteral, Sequence {
     public typealias ArrayLiteralElement = LiteralType
     public typealias Index = Int
     public typealias Element = LiteralType
@@ -125,7 +126,7 @@ public final class RList<LiteralType>: RBase, ExpressibleByArrayLiteral, Sequenc
         _ = try? r.sendCommand("del", values: [key])
 
         for value in elements {
-            _ = try? r.sendCommand("rpush", values: [key, String(describing: value)])
+            _ = try? r.sendCommand("rpush", values: [key, value])
         }
     }
 
@@ -188,7 +189,7 @@ public final class RList<LiteralType>: RBase, ExpressibleByArrayLiteral, Sequenc
                     case let stringResult as String:
                         return stringResult as? LiteralType
                     default:
-                        return String(describing: result) as? LiteralType
+                        return result as? LiteralType
                 }
             case "Int":
                 switch result
@@ -253,7 +254,7 @@ public final class RList<LiteralType>: RBase, ExpressibleByArrayLiteral, Sequenc
                     case let stringResult as String:
                         return stringResult as? LiteralType
                     default:
-                        return String(describing: result) as? LiteralType
+                        return result as? LiteralType
                 }
             case "Int":
                 switch result
@@ -311,6 +312,6 @@ extension RList/*: *RangeReplaceableCollection*/ {
             return
         }
 
-        _ = try? r.sendCommand("rpush", values: [key, String(describing: newElement)])
+        _ = try? r.sendCommand("rpush", values: [key, newElement])
     }
 }

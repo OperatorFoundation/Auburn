@@ -104,7 +104,7 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
         _ = try? r.sendCommand("del", values: [key])
 
         for value in elements {
-            _ = try? r.sendCommand("zadd", values: [key, String(describing: 0), String(describing: value)])
+            _ = try? r.sendCommand("zadd", values: [key, 0, value])
         }
     }
 
@@ -119,7 +119,7 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
         _ = try? r.sendCommand("del", values: [key])
 
         for (itemKey, value) in elements {
-            _ = try? r.sendCommand("zadd", values: [key, String(describing: value), String(describing: itemKey)])
+            _ = try? r.sendCommand("zadd", values: [key, value, itemKey])
         }
     }
     
@@ -183,7 +183,7 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
 
         let (itemKey, _) = member
 
-        let maybeResult = try? r.sendCommand("zrank", values: [key, String(describing: itemKey)])
+        let maybeResult = try? r.sendCommand("zrank", values: [key, itemKey])
         guard let result = maybeResult else {
             return false
         }
@@ -293,11 +293,11 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
         let (itemKey, score) = newMember
 
         let maybeResult = try? r.sendCommand("zadd", values: [self.key, score, itemKey])
-        guard let result = maybeResult else {
+        guard let result = maybeResult as? Int else {
             return (false, newMember)
         }
 
-        return (String(describing: result) == "1", newMember)
+        return (result == 1, newMember)
     }
 
     // Score is ignored
@@ -309,11 +309,11 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
         let (itemKey, _) = member
 
         let maybeResult = try? r.sendCommand("zrem", values: [self.key, itemKey])
-        guard let result = maybeResult else {
+        guard let result = maybeResult as? Float else {
             return nil
         }
 
-        return (itemKey, Float(String(describing: result))!)
+        return (itemKey, result)
     }
     
     public func incrementScore(ofField fieldKey: LiteralType, byIncrement increment: Double) -> Double?
@@ -357,12 +357,12 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
 
         let (itemKey, score) = newMember
 
-        let maybeResult = try? r.sendCommand("zadd", values: [self.key, String(describing: score), String(describing: itemKey)])
-        guard let result = maybeResult else {
+        let maybeResult = try? r.sendCommand("zadd", values: [self.key, score, itemKey])
+        guard let result = maybeResult as? Float else {
             return nil
         }
 
-        return (itemKey, Float(String(describing: result))!)
+        return (itemKey, result)
     }
 
     public func formUnion(_ other: RSortedSet<LiteralType>) {
@@ -433,7 +433,7 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
     public subscript(position: Int) -> LiteralType?
     {
         let r = Auburn.redis!
-        let maybeResult = try? r.sendCommand("zrange", values: [self.key, String(describing: position), String(describing: position)])
+        let maybeResult = try? r.sendCommand("zrange", values: [self.key, position, position])
         
         guard let result = maybeResult as? [RedisType]
         else
@@ -452,7 +452,7 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
                     case let stringResult as String:
                         return stringResult as? LiteralType
                     default:
-                        return String(describing: result) as? LiteralType
+                        return result as? LiteralType
                 }
             case "Data":
                 switch result[0]

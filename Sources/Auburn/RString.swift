@@ -17,11 +17,11 @@ public final class RString: RBase, ExpressibleByStringLiteral, LosslessStringCon
             }
 
             let maybeResult = try? r.get(key: key)
-            guard let result = maybeResult else {
+            guard let result = maybeResult as? String else {
                 return ""
             }
 
-            return String(describing: result)
+            return result
         }
     }
 
