@@ -173,7 +173,7 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
     }
     
     /// Returns all the element keys in the sorted set with a score between min and max (including elements with score equal to min or max). The elements are considered to be ordered from low to high scores.
-    public func getElements(withMinScore minScore: Int, andMaxScore maxScore: Int) -> [LiteralType]?
+    public func getElements(withMinScore minScore: Double, andMaxScore maxScore: Double) -> [LiteralType]?
     {
         guard let r = Auburn.redis
             else
