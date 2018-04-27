@@ -491,6 +491,17 @@ class AuburnTests: XCTestCase
         XCTAssertEqual(testSortedSet[1], "and")
     }
     
+    func testSortedSetElementsWithScore()
+    {
+        let testSortedSet: RSortedSet<String> = ["cats": 2, "and": 1, "dogs": 2, "together?!??": 4]
+        testSortedSet.key="creatingSortedSet"
+        let results = testSortedSet.getElements(withMinScore: 2, andMaxScore: 2)
+        XCTAssert(results?.count == 2)
+        XCTAssertTrue(results!.contains("cats"))
+         XCTAssertTrue(results!.contains("dogs"))
+        testSortedSet.delete()
+    }
+    
     func testSortedSetFirstAndLast()
     {
         let catsString = "cats"
