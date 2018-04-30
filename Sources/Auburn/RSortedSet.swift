@@ -677,6 +677,41 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
         }
     }
     
+    public func getLongestSequence(withScore score: Double) -> LiteralType?
+    {
+        let r = Auburn.redis!
+        let maybeResult = try? r.sendCommand("subsequences.rangeByLength", values: [self.key, score])
+        
+        guard let result = maybeResult
+            else
+        {
+            return nil
+        }
+        
+        guard let dataResult = result as? Data
+        else
+        {
+            return nil
+        }
+        
+        let typeString = "\(LiteralType.self)"
+        switch typeString
+        {
+            case "String":
+                return dataResult.string as? LiteralType
+            case "Data":
+                return dataResult as? LiteralType
+            case "Int":
+                return Int(dataResult.string) as? LiteralType
+            case "Float":
+                return Float(dataResult.string) as? LiteralType
+            case "Double":
+                return Double(dataResult.string) as? LiteralType
+            default:
+                return nil
+        }
+    }
+    
     func processZrange(results: RedisType) -> Element?
     {
         switch results {

@@ -491,6 +491,22 @@ class AuburnTests: XCTestCase
         XCTAssertEqual(testSortedSet[1], "and")
     }
     
+    func testSortedSetGetLongestSequence()
+    {
+        let testSortedSet: RSortedSet<String> = ["cats": 2, "and": 1, "dogs": 2, "together?!??": 2]
+        testSortedSet.key="creatingSortedSet"
+        
+        guard let result = testSortedSet.getLongestSequence(withScore: 2)
+            else
+        {
+            XCTFail()
+            return
+        }
+        
+        XCTAssert(result == "together?!??")
+        testSortedSet.delete()
+    }
+    
     func testSortedSetElementsWithScore()
     {
         let testSortedSet: RSortedSet<String> = ["cats": 2, "and": 1, "dogs": 2, "together?!??": 4]
