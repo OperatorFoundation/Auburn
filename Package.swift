@@ -10,7 +10,7 @@ let package = Package(
             targets: ["Auburn"])
     ],
     dependencies: [
-        .package(url: "https://github.com/OperatorFoundation/Redshot.git", from: "0.3.8")
+        .package(url: "https://github.com/OperatorFoundation/Redshot.git", from: "0.3.11")
     ],
     targets: [
         .target(
