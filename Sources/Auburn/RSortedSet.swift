@@ -723,29 +723,37 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
             let item = resultsArray[0]
             let score = resultsArray[1]
             
-            switch score {
+            switch score
+            {
             case let dataScore as Data:
                 let stringScore = dataScore.string
                 let floatScore = Float(stringScore)
                 
-                switch item {
+                switch item
+                {
                 case let dataItem as Data:
-                    
                     let returnType = "\(LiteralType.self)"
-                    switch returnType {
+                    switch returnType
+                    {
                     case "Int":
-                        let stringItem = dataItem.string
-                        let maybeIntItem = Int(stringItem)
+                        let maybeIntItem = Int(dataItem.string)
                         guard let intItem = maybeIntItem
-                            else {
-                                return nil
-                        }
+                            else { return nil }
                         return ((intItem, floatScore) as! Element)
+                        
+                    case "Double":
+                        let maybeDoubleItem = Double(dataItem.string)
+                        guard let doubleItem = maybeDoubleItem
+                            else { return nil }
+                        return ((doubleItem, floatScore) as! Element)
+                        
                     case "String":
                         let stringItem = dataItem.string
                         return ((stringItem, floatScore) as! Element)
+                        
                     case "Data":
                         return ((dataItem, floatScore) as! Element)
+                        
                     default:
                         return nil
                     }
