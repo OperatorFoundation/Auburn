@@ -1,7 +1,9 @@
 import Foundation
 import RedShot
+import Datable
 
-public class Auburn {
+public class Auburn
+{
     static var _redis: Redis?
     static var redis: Redis? {
         get {
@@ -13,9 +15,41 @@ public class Auburn {
         }
     }
     
+    static public var dbfilename: String?
+    {
+        get
+        {
+            guard let r = Auburn.redis else
+            {
+                NSLog("No redis connection")
+                return nil
+            }
+            
+            do
+            {
+                let response = try r.configGet(key: "dbfilename")
+                
+                guard let responseArray = response as? [Data]
+                else
+                {
+                    return nil
+                }
+                
+                
+                return responseArray[1].string
+            }
+            catch let error
+            {
+                print("\nError getting dbfilename: \(error)")
+                return nil
+            }
+        }
+    }
+    
     static private let queue: DispatchQueue = DispatchQueue(label: "RedisTransactions")
     
-    static public func transaction(_ block: (Redis) throws -> Void) -> [RedisType]? {
+    static public func transaction(_ block: (Redis) throws -> Void) -> [RedisType]?
+    {
         var result: [RedisType]?
         
         guard let r = Auburn.redis else {
@@ -34,4 +68,5 @@ public class Auburn {
         
         return result
     }
+
 }

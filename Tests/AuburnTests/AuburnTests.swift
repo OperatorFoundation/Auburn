@@ -14,6 +14,12 @@ extension String: LosslessStringConvertible {
 
 class AuburnTests: XCTestCase
 {
+    func testDBFilename()
+    {
+        let name = Auburn.dbfilename
+        print("\nDB filename is \(String(describing: name))")
+        XCTAssert(name != nil)
+    }
     
     func testStringDelete()
     {

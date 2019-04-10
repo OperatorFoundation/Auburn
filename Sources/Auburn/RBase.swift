@@ -8,9 +8,11 @@
 import Foundation
 import RedShot
 
-public class RBase {
+public class RBase
+{
     var _key: String
-    public var key: String {
+    public var key: String
+    {
         get {
             return _key
         }
