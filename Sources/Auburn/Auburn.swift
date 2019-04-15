@@ -52,7 +52,9 @@ public class Auburn
     {
         var result: [RedisType]?
         
-        guard let r = Auburn.redis else {
+        guard let r = Auburn.redis
+            else
+        {
             NSLog("No redis connection")
             return nil
         }
@@ -67,6 +69,18 @@ public class Auburn
         }
         
         return result
+    }
+    
+    static public func shutdownRedis()
+    {
+        guard let r = Auburn.redis
+            else
+        {
+            NSLog("\nDid not tr shutdown Redis server: No redis connection")
+            return
+        }
+        
+        let _ = r.shutdown()
     }
 
 }
