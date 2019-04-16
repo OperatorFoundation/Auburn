@@ -21,7 +21,7 @@ public class Auburn
         {
             guard let r = Auburn.redis else
             {
-                NSLog("No redis connection")
+                NSLog("\nUnable to get db filename: No redis connection")
                 return nil
             }
             
@@ -42,6 +42,36 @@ public class Auburn
             {
                 print("\nError getting dbfilename: \(error)")
                 return nil
+            }
+        }
+        set
+        {
+            guard let newName = newValue
+                else { return }
+            guard let r = Auburn.redis else
+            {
+                NSLog("\nUnable to set db filename: No redis connection")
+                return
+            }
+            
+            do
+            {
+                let response = try r.configSet(key: "dbfilename", value: newName)
+                if response == true
+                {
+                    do
+                    {
+                        let rewriteResponse = try r.configRewrite()
+                        if rewriteResponse == false
+                        {
+                            print("\nFailed to rewrite config with new db filename.")
+                        }
+                    }
+                }
+            }
+            catch let error
+            {
+                print("\nError setting db filename: \(error)")
             }
         }
     }

@@ -19,6 +19,10 @@ class AuburnTests: XCTestCase
         let name = Auburn.dbfilename
         print("\nDB filename is \(String(describing: name))")
         XCTAssert(name != nil)
+        
+        Auburn.dbfilename = "testdump.rdb"
+        XCTAssert(Auburn.dbfilename == "testdump.rdb")
+        Auburn.dbfilename = "dump.rdb"
     }
     
     func testStringDelete()
