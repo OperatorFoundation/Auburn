@@ -66,10 +66,6 @@ public class Auburn
                         {
                             print("\nFailed to rewrite config with new db filename.")
                         }
-                        else
-                        {
-                            self.dbfilename = newName
-                        }
                     }
                 }
             }
