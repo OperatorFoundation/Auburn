@@ -4,6 +4,7 @@ import Datable
 
 public class Auburn
 {
+    static private let queue: DispatchQueue = DispatchQueue(label: "RedisTransactions")
     static var _redis: Redis?
     static var redis: Redis? {
         get {
@@ -76,7 +77,10 @@ public class Auburn
         }
     }
     
-    static private let queue: DispatchQueue = DispatchQueue(label: "RedisTransactions")
+    static public func restartRedis()
+    {
+        _redis = nil
+    }
     
     static public func transaction(_ block: (Redis) throws -> Void) -> [RedisType]?
     {
