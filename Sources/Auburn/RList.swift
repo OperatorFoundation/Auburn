@@ -89,6 +89,24 @@ public final class RList<LiteralType: Datable>: RBase, ExpressibleByArrayLiteral
     public var startIndex: RList<LiteralType>.Index = 0
     public var endIndex: RList<LiteralType>.Index = -1
 
+    public var list: [Element]
+    {
+        get
+        {
+            var temp: [Element] = []
+            
+            for index in 0 ..< count
+            {
+                if let item = self[index]
+                {
+                    temp.append(item)
+                }
+            }
+            
+            return temp
+        }
+    }
+    
     public var count: Index
     {
         get
