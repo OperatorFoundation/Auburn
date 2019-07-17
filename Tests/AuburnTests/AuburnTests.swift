@@ -9,9 +9,6 @@
 import XCTest
 @testable import Auburn
 
-extension String: LosslessStringConvertible {
-}
-
 class AuburnTests: XCTestCase
 {
     func testDBFilename()
@@ -525,6 +522,42 @@ class AuburnTests: XCTestCase
         XCTAssert(results?.count == 2)
         XCTAssertTrue(results!.contains("cats"))
          XCTAssertTrue(results!.contains("dogs"))
+        testSortedSet.delete()
+    }
+    
+    func testSortedSetPopLow()
+    {
+        let testSortedSet: RSortedSet<String> = ["cats": 2, "and": 1, "dogs": 2, "together?!??": 4]
+        testSortedSet.key="creatingSortedSet"
+        let maybeResults = testSortedSet.removeLowest(numberToRemove: 2)
+        
+        guard let results = maybeResults
+            else
+        {
+            XCTFail()
+            return
+        }
+        
+        XCTAssert(results.count == 2)
+        XCTAssert(results[0].score == 1.0)
+        testSortedSet.delete()
+    }
+    
+    func testSortedSetPopHigh()
+    {
+        let testSortedSet: RSortedSet<String> = ["cats": 2, "and": 1, "dogs": 2, "together?!??": 4]
+        testSortedSet.key="creatingSortedSet"
+        let maybeResults = testSortedSet.removeHighest(numberToRemove: 2)
+        
+        guard let results = maybeResults
+        else
+        {
+            XCTFail()
+            return
+        }
+        
+        XCTAssert(results.count == 2)
+        XCTAssert(results[0].score == 4.0)
         testSortedSet.delete()
     }
     

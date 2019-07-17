@@ -579,68 +579,7 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
             return nil
         }
         
-        let typeString = "\(LiteralType.self)"
-        switch typeString
-        {
-            case "String":
-                switch result[0]
-                {
-                    case let dataResult as Data:
-                        return dataResult.string as? LiteralType
-                    case let stringResult as String:
-                        return stringResult as? LiteralType
-                    default:
-                        return result as? LiteralType
-                }
-            case "Data":
-                switch result[0]
-                {
-                    case let dataResult as Data:
-                        return dataResult as? LiteralType
-                    case let stringResult as String:
-                        return stringResult.data as? LiteralType
-                    default:
-                        return nil
-                }
-            case "Int":
-                switch result[0]
-                {
-                    case let dataResult as Data:
-                        return Int(dataResult.string) as? LiteralType
-                    case let stringResult as String:
-                        return Int(stringResult) as? LiteralType
-                    case let intResult as Int:
-                        return intResult as? LiteralType
-                    default:
-                        return nil
-                }
-            case "Float":
-                switch result[0]
-                {
-                    case let dataResult as Data:
-                        return Float(dataResult.string) as? LiteralType
-                    case let stringResult as String:
-                        return Float(stringResult) as? LiteralType
-                    case let floatResult as Float:
-                        return floatResult as? LiteralType
-                    default:
-                        return nil
-                }
-            case "Double":
-                switch result[0]
-                {
-                    case let dataResult as Data:
-                        return Double(dataResult.string) as? LiteralType
-                    case let stringResult as String:
-                        return Double(stringResult) as? LiteralType
-                    case let doubleResult as Double:
-                        return doubleResult as? LiteralType
-                    default:
-                        return nil
-                }
-            default:
-                return nil
-        }
+        return convert(result: result[0])
     }
 
     public func index(after i: Index) -> Index {
@@ -658,7 +597,106 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
         return result.makeIterator()
     }
     
-    public func addSubsequences(offsetPrefix: String, sequence: Data) -> Int? {
+    /**
+     Removes and returns up to count members with the lowest scores in the sorted set.
+     
+     - Parameters:
+        - numberToRemove: number of elements to remove from the sorted set and return to the requestor. When left unspecified, the default value for count is 1. Specifying a count value that is higher than the sorted set's cardinality will not produce an error.
+     - Returns: An array of tuples containing popped elements and their scores sorted lowest to highest. When returning multiple elements, the one with the lowest score will be the first, followed by the elements with greater scores.
+     */
+    public func removeLowest(numberToRemove count: Int?) -> [(value: LiteralType, score: Float)]?
+    {
+        let r = Auburn.redis!
+        let maybeResult = try? r.zpopmin(key: self.key, count: count)
+
+        guard let result = maybeResult as? [RedisType]
+            else { return nil }
+        
+        var returnArray = [(value: LiteralType, score: Float)]()
+        
+        for index in stride(from: 0, to: result.count, by: 2)
+        {
+            if let value = convert(result: result[index])
+            {
+                let scoreResult = result[index + 1]
+                let score: Float?
+                
+                switch scoreResult
+                {
+                case let dataResult as Data:
+                    score = Float(dataResult.string)
+                case let stringResult as String:
+                    score = Float(stringResult)
+                case let floatResult as Float:
+                    score = floatResult
+                default:
+                    score = nil
+                }
+                
+                if score != nil
+                {
+                    returnArray.append((value: value, score: Float(score!)))
+                }
+            }
+        }
+        
+        if returnArray.isEmpty
+        { return nil }
+        else
+        { return returnArray }
+    }
+    
+    /**
+     Removes and returns up to count members with the highest scores in the sorted set.
+     
+     - Parameters:
+        - numberToRemove: number of elements to remove from the sorted set and return to the requestor. When left unspecified, the default value for count is 1. Specifying a count value that is higher than the sorted set's cardinality will not produce an error.
+     - Returns: An array of tuples containing popped elements and their scores sorted highest to lowest. When returning multiple elements, the one with the highest score will be the first, followed by the elements with lower scores.
+     */
+    public func removeHighest(numberToRemove count: Int?) -> [(value: LiteralType, score: Float)]?
+    {
+        let r = Auburn.redis!
+        let maybeResult = try? r.zpopmax(key: self.key, count: count)
+        
+        guard let result = maybeResult as? [RedisType]
+            else { return nil }
+        
+        var returnArray = [(value: LiteralType, score: Float)]()
+        
+        for index in stride(from: 0, to: result.count, by: 2)
+        {
+            if let value = convert(result: result[index])
+            {
+                let scoreResult = result[index + 1]
+                let score: Float?
+                
+                switch scoreResult
+                {
+                case let dataResult as Data:
+                    score = Float(dataResult.string)
+                case let stringResult as String:
+                    score = Float(stringResult)
+                case let floatResult as Float:
+                    score = floatResult
+                default:
+                    score = nil
+                }
+                
+                if score != nil
+                {
+                    returnArray.append((value: value, score: Float(score!)))
+                }
+            }
+        }
+        
+        if returnArray.isEmpty
+        { return nil }
+        else
+        { return returnArray }
+    }
+    
+    public func addSubsequences(offsetPrefix: String, sequence: Data) -> Int?
+    {
         let r = Auburn.redis!
         let maybeResult = try? r.sendCommand("subsequences.add", values: [self.key, offsetPrefix, sequence])
         
@@ -761,6 +799,72 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
                     return nil
                 }
                 
+            default:
+                return nil
+            }
+        default:
+            return nil
+        }
+    }
+    
+    func convert(result: RedisType) -> LiteralType?
+    {
+        let typeString = "\(LiteralType.self)"
+        switch typeString
+        {
+        case "String":
+            switch result
+            {
+            case let dataResult as Data:
+                return dataResult.string as? LiteralType
+            case let stringResult as String:
+                return stringResult as? LiteralType
+            default:
+                return result as? LiteralType
+            }
+        case "Data":
+            switch result
+            {
+            case let dataResult as Data:
+                return dataResult as? LiteralType
+            case let stringResult as String:
+                return stringResult.data as? LiteralType
+            default:
+                return nil
+            }
+        case "Int":
+            switch result
+            {
+            case let dataResult as Data:
+                return Int(dataResult.string) as? LiteralType
+            case let stringResult as String:
+                return Int(stringResult) as? LiteralType
+            case let intResult as Int:
+                return intResult as? LiteralType
+            default:
+                return nil
+            }
+        case "Float":
+            switch result
+            {
+            case let dataResult as Data:
+                return Float(dataResult.string) as? LiteralType
+            case let stringResult as String:
+                return Float(stringResult) as? LiteralType
+            case let floatResult as Float:
+                return floatResult as? LiteralType
+            default:
+                return nil
+            }
+        case "Double":
+            switch result
+            {
+            case let dataResult as Data:
+                return Double(dataResult.string) as? LiteralType
+            case let stringResult as String:
+                return Double(stringResult) as? LiteralType
+            case let doubleResult as Double:
+                return doubleResult as? LiteralType
             default:
                 return nil
             }
