@@ -333,3 +333,18 @@ extension RList/*: *RangeReplaceableCollection*/ {
         _ = try? r.sendCommand("rpush", values: [key, newElement])
     }
 }
+
+extension RList
+{
+    public var array: [Element]
+    {
+        get
+        {
+            let r = Auburn.redis!
+            let maybeResult = try? r.lrange(key: self.key, start: 0, stop: -1)
+            let result = maybeResult! as! [LiteralType]
+            
+            return result
+        }
+    }
+}

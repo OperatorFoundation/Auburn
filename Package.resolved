@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/OperatorFoundation/Datable.git",
         "state": {
           "branch": null,
-          "revision": "cc91e8b71dbbe125a19090c26f4e8c21b6d0dcb4",
-          "version": "1.0.5"
+          "revision": "eccbedd3c89007691034b951a1fc0780e54701ea",
+          "version": "1.1.1"
         }
       },
       {
@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/OperatorFoundation/Redshot.git",
         "state": {
           "branch": null,
-          "revision": "e80546f6552c712fd1c643b1b757aef5669a7113",
-          "version": "0.4.0"
+          "revision": "fb202bc45c90834cf3356a471c5f3b4fc857cf5e",
+          "version": "0.4.1"
         }
       }
     ]
