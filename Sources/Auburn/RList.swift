@@ -340,11 +340,74 @@ extension RList
     {
         get
         {
+            var results: [Element] = []
+            
             let r = Auburn.redis!
             let maybeResult = try? r.lrange(key: self.key, start: 0, stop: -1)
-            let result = maybeResult! as! [LiteralType]
             
-            return result
+            guard let result = maybeResult
+                else
+            {
+                return []
+            }
+            
+            let typeString = "\(LiteralType.self)"
+            
+            switch typeString
+            {
+            case "String":
+                switch result
+                {
+                case let dataResults as [Data]:
+                    for data in dataResults
+                    {
+                        guard let literal = data.string as? LiteralType else { continue }
+                        results.append(literal)
+                    }
+                    return results
+                default:
+                    return []
+                }
+                // FIXME - For later!
+                //                case "Int":
+                //                    switch result
+                //                    {
+                //                        case let dataResult as Data:
+                //                            return Int(dataResult.string) as? LiteralType
+                //                        case let stringResult as String:
+                //                            return Int(stringResult) as? LiteralType
+                //                        case let intResult as Int:
+                //                            return intResult as? LiteralType
+                //                        default:
+                //                            return nil
+                //                    }
+                //                case "Float":
+                //                    switch result
+                //                    {
+                //                        case let dataResult as Data:
+                //                            return Float(dataResult.string) as? LiteralType
+                //                        case let stringResult as String:
+                //                            return Float(stringResult) as? LiteralType
+                //                        case let floatResult as Float:
+                //                            return floatResult as? LiteralType
+                //                        default:
+                //                            return nil
+                //                    }
+                //                case "Double":
+                //                    switch result
+                //                    {
+                //                        case let dataResult as Data:
+                //                            return Double(dataResult.string) as? LiteralType
+                //                        case let stringResult as String:
+                //                            return Double(stringResult) as? LiteralType
+                //                        case let floatResult as Float:
+                //                            return floatResult as? LiteralType
+                //                        default:
+                //                            return nil
+            //                    }
+            default:
+                return []
+            }
         }
     }
 }
