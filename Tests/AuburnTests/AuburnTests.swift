@@ -50,6 +50,23 @@ class AuburnTests: XCTestCase
         testList.delete()
     }
     
+    func testArrayFromList()
+    {
+        let testList: RList<String> = ["cats", "and", "dogs", "together?!??"]
+        testList.key="creating"
+        
+        let testArray = testList.array
+        
+        guard !testArray.isEmpty, testArray.count == 4
+        else
+        {
+            XCTFail()
+            testList.delete()
+            return
+        }
+        testList.delete()
+    }
+    
     func testListCount()
     {
         let bugs: RList<String> = ["Aphid", "Bumblebee", "Cicada", "Damselfly", "Earwig"]

@@ -183,7 +183,7 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
         
         let maybeResults = try? r.zrangebyscore(setKey: self.key, minScore: minScore, maxScore: maxScore)
         
-        guard let results = maybeResults as? [Datable], results.isEmpty == false
+        guard let results = maybeResults as? [RedisType], results.isEmpty == false
             else
         {
             print("\nNil result from zrangebyscore command.\n")
@@ -195,119 +195,15 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
             print("\nNil result from zrangebyscore command.\n")
             return nil
         }
-        let typeString = "\(LiteralType.self)"
-        var resultsArray = [LiteralType]()
-        for eachElement in results
-        {
-            
-            switch typeString
-            {
-            case "String":
-                switch eachElement
-                {
-                case let dataResult as Data:
-                    if let newResult = dataResult.string as? LiteralType
-                    {
-                        resultsArray.append(newResult)
-                    }
-                case let stringResult as String:
-                    if let newResult = stringResult as? LiteralType
-                    {
-                        resultsArray.append(newResult)
-                    }
-                default:
-                    continue
-                }
-            case "Data":
-                switch eachElement
-                {
-                case let dataResult as Data:
-                    if let newResult = dataResult as? LiteralType
-                    {
-                        resultsArray.append(newResult)
-                    }
-                case let stringResult as String:
-                    if let newResult = stringResult.data as? LiteralType
-                    {
-                        resultsArray.append(newResult)
-                    }
-                default:
-                    continue
-                }
-            case "Int":
-                switch eachElement
-                {
-                case let dataResult as Data:
-                    if let newResult = Int(dataResult.string) as? LiteralType
-                    {
-                        resultsArray.append(newResult)
-                    }
-                case let stringResult as String:
-                    if let newResult = Int(stringResult) as? LiteralType
-                    {
-                        resultsArray.append(newResult)
-                    }
-                case let intResult as Int:
-                    if let newResult = intResult as? LiteralType
-                    {
-                        resultsArray.append(newResult)
-                    }
-                default:
-                    continue
-                }
-            case "Float":
-                switch eachElement
-                {
-                case let dataResult as Data:
-                    if let newResult = Float(dataResult.string) as? LiteralType
-                    {
-                        resultsArray.append(newResult)
-                    }
-                case let stringResult as String:
-                    if let newResult = Float(stringResult) as? LiteralType
-                    {
-                        resultsArray.append(newResult)
-                    }
-                case let floatResult as Float:
-                    if let newResult = floatResult as? LiteralType
-                    {
-                        resultsArray.append(newResult)
-                    }
-                default:
-                    continue
-                }
-            case "Double":
-                switch eachElement
-                {
-                case let dataResult as Data:
-                    if let newResult = Double(dataResult.string) as? LiteralType
-                    {
-                        resultsArray.append(newResult)
-                    }
-                case let stringResult as String:
-                    if let newResult = Double(stringResult) as? LiteralType
-                    {
-                        resultsArray.append(newResult)
-                    }
-                case let doubleResult as Double:
-                    if let newResult = doubleResult as? LiteralType
-                    {
-                        resultsArray.append(newResult)
-                    }
-                default:
-                    continue
-                }
-            default:
-                continue
-            }
-        }
         
-        if resultsArray.isEmpty
+        if let convertedArray = convert(resultArray: results)
+        {
+            return convertedArray
+        }
+        else
         {
             return nil
         }
-    
-        return resultsArray
     }
 
     // SetAlgebra
@@ -804,6 +700,34 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
             }
         default:
             return nil
+        }
+    }
+    
+    func convert(resultArray: [RedisType]) -> [LiteralType]?
+    {
+        if resultArray.isEmpty
+        {
+            return nil
+        }
+        else
+        {
+            var convertedObjects = [LiteralType]()
+            for result in resultArray
+            {
+                if let converted = convert(result: result)
+                {
+                    convertedObjects.append(converted)
+                }
+            }
+            
+            if convertedObjects.isEmpty
+            {
+                return nil
+            }
+            else
+            {
+                return convertedObjects
+            }
         }
     }
     

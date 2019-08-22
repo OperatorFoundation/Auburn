@@ -195,59 +195,7 @@ public final class RList<LiteralType: Datable>: RBase, ExpressibleByArrayLiteral
             return nil
         }
         
-        let typeString = "\(LiteralType.self)"
-        
-        switch typeString
-        {
-            case "String":
-                switch result
-                {
-                    case let dataResult as Data:
-                        return dataResult.string as? LiteralType
-                    case let stringResult as String:
-                        return stringResult as? LiteralType
-                    default:
-                        return result as? LiteralType
-                }
-            case "Int":
-                switch result
-                {
-                    case let dataResult as Data:
-                        return Int(dataResult.string) as? LiteralType
-                    case let stringResult as String:
-                        return Int(stringResult) as? LiteralType
-                    case let intResult as Int:
-                        return intResult as? LiteralType
-                    default:
-                        return nil
-                }
-            case "Float":
-                switch result
-                {
-                    case let dataResult as Data:
-                        return Float(dataResult.string) as? LiteralType
-                    case let stringResult as String:
-                        return Float(stringResult) as? LiteralType
-                    case let floatResult as Float:
-                        return floatResult as? LiteralType
-                    default:
-                        return nil
-                }
-            case "Double":
-                switch result
-                {
-                    case let dataResult as Data:
-                        return Double(dataResult.string) as? LiteralType
-                    case let stringResult as String:
-                        return Double(stringResult) as? LiteralType
-                    case let floatResult as Float:
-                        return floatResult as? LiteralType
-                    default:
-                        return nil
-                }
-            default:
-                return nil
-        }
+        return convert(result: result)
     }
 
     public subscript(position: Index) -> LiteralType?
@@ -259,60 +207,8 @@ public final class RList<LiteralType: Datable>: RBase, ExpressibleByArrayLiteral
         {
             return nil
         }
-
-        let typeString = "\(LiteralType.self)"
-
-        switch typeString
-        {
-            case "String":
-                switch result
-                {
-                    case let dataResult as Data:
-                        return dataResult.string as? LiteralType
-                    case let stringResult as String:
-                        return stringResult as? LiteralType
-                    default:
-                        return result as? LiteralType
-                }
-            case "Int":
-                switch result
-                {
-                    case let dataResult as Data:
-                        return Int(dataResult.string) as? LiteralType
-                    case let stringResult as String:
-                        return Int(stringResult) as? LiteralType
-                    case let intResult as Int:
-                        return intResult as? LiteralType
-                    default:
-                        return nil
-                }
-            case "Float":
-                switch result
-                {
-                    case let dataResult as Data:
-                        return Float(dataResult.string) as? LiteralType
-                    case let stringResult as String:
-                        return Float(stringResult) as? LiteralType
-                    case let floatResult as Float:
-                        return floatResult as? LiteralType
-                    default:
-                        return nil
-                }
-            case "Double":
-                switch result
-                {
-                    case let dataResult as Data:
-                        return Double(dataResult.string) as? LiteralType
-                    case let stringResult as String:
-                        return Double(stringResult) as? LiteralType
-                    case let floatResult as Float:
-                        return floatResult as? LiteralType
-                    default:
-                        return nil
-                }
-            default:
-                return nil
-        }
+        
+        return convert(result: result)
     }
 
     public func index(after i: Index) -> Index {
@@ -324,11 +220,11 @@ public final class RList<LiteralType: Datable>: RBase, ExpressibleByArrayLiteral
     }
 }
 
-extension RList/*: *RangeReplaceableCollection*/ {
-    public func append(_ newElement: RList.Element) {
-        guard let r = Auburn.redis else {
-            return
-        }
+extension RList/*: *RangeReplaceableCollection*/
+{
+    public func append(_ newElement: RList.Element)
+    {
+        guard let r = Auburn.redis else { return }
 
         _ = try? r.sendCommand("rpush", values: [key, newElement])
     }
@@ -340,74 +236,119 @@ extension RList
     {
         get
         {
-            var results: [Element] = []
-            
             let r = Auburn.redis!
             let maybeResult = try? r.lrange(key: self.key, start: 0, stop: -1)
             
-            guard let result = maybeResult
+            guard let resultArray = maybeResult as? [RedisType]
                 else
             {
                 return []
             }
             
-            let typeString = "\(LiteralType.self)"
-            
-            switch typeString
+            if let convertedObjects = convert(resultArray: resultArray)
             {
-            case "String":
-                switch result
-                {
-                case let dataResults as [Data]:
-                    for data in dataResults
-                    {
-                        guard let literal = data.string as? LiteralType else { continue }
-                        results.append(literal)
-                    }
-                    return results
-                default:
-                    return []
-                }
-                // FIXME - For later!
-                //                case "Int":
-                //                    switch result
-                //                    {
-                //                        case let dataResult as Data:
-                //                            return Int(dataResult.string) as? LiteralType
-                //                        case let stringResult as String:
-                //                            return Int(stringResult) as? LiteralType
-                //                        case let intResult as Int:
-                //                            return intResult as? LiteralType
-                //                        default:
-                //                            return nil
-                //                    }
-                //                case "Float":
-                //                    switch result
-                //                    {
-                //                        case let dataResult as Data:
-                //                            return Float(dataResult.string) as? LiteralType
-                //                        case let stringResult as String:
-                //                            return Float(stringResult) as? LiteralType
-                //                        case let floatResult as Float:
-                //                            return floatResult as? LiteralType
-                //                        default:
-                //                            return nil
-                //                    }
-                //                case "Double":
-                //                    switch result
-                //                    {
-                //                        case let dataResult as Data:
-                //                            return Double(dataResult.string) as? LiteralType
-                //                        case let stringResult as String:
-                //                            return Double(stringResult) as? LiteralType
-                //                        case let floatResult as Float:
-                //                            return floatResult as? LiteralType
-                //                        default:
-                //                            return nil
-            //                    }
-            default:
-                return []
+                return convertedObjects
             }
+            else
+            {
+                print("\nFailed to convert our result :(")
+            }
+            
+            return []
+        }
+    }
+    
+    func convert(resultArray: [RedisType]) -> [LiteralType]?
+    {
+        if resultArray.isEmpty
+        {
+            return nil
+        }
+        else
+        {
+            var convertedObjects = [LiteralType]()
+            for result in resultArray
+            {
+                if let converted = convert(result: result)
+                {
+                    convertedObjects.append(converted)
+                }
+            }
+            
+            if convertedObjects.isEmpty
+            {
+                return nil
+            }
+            else
+            {
+                return convertedObjects
+            }
+        }
+    }
+    
+    func convert(result: RedisType) -> LiteralType?
+    {
+        let typeString = "\(LiteralType.self)"
+        switch typeString
+        {
+        case "String":
+            switch result
+            {
+            case let dataResult as Data:
+                return dataResult.string as? LiteralType
+            case let stringResult as String:
+                return stringResult as? LiteralType
+            default:
+                return result as? LiteralType
+            }
+        case "Data":
+            switch result
+            {
+            case let dataResult as Data:
+                return dataResult as? LiteralType
+            case let stringResult as String:
+                return stringResult.data as? LiteralType
+            default:
+                return nil
+            }
+        case "Int":
+            switch result
+            {
+            case let dataResult as Data:
+                return Int(dataResult.string) as? LiteralType
+            case let stringResult as String:
+                return Int(stringResult) as? LiteralType
+            case let intResult as Int:
+                return intResult as? LiteralType
+            default:
+                return nil
+            }
+        case "Float":
+            switch result
+            {
+            case let dataResult as Data:
+                return Float(dataResult.string) as? LiteralType
+            case let stringResult as String:
+                return Float(stringResult) as? LiteralType
+            case let floatResult as Float:
+                return floatResult as? LiteralType
+            default:
+                return nil
+            }
+        case "Double":
+            switch result
+            {
+            case let dataResult as Data:
+                return Double(dataResult.string) as? LiteralType
+            case let stringResult as String:
+                return Double(stringResult) as? LiteralType
+            case let doubleResult as Double:
+                return doubleResult as? LiteralType
+            default:
+                return nil
+            }
+        default:
+            return nil
         }
     }
 }
