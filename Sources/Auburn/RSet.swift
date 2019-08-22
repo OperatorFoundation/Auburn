@@ -200,7 +200,7 @@ public final class RSet<LiteralType: Datable>: RBase, ExpressibleByArrayLiteral,
     public subscript(position: Int) -> LiteralType?
     {
         let r = Auburn.redis!
-        let maybeResult = try? r.smbembers(key: self.key)
+        let maybeResult = try? r.smembers(key: self.key)
         
         guard let result = maybeResult as? [RedisType]
         else
@@ -298,7 +298,7 @@ public final class RSet<LiteralType: Datable>: RBase, ExpressibleByArrayLiteral,
     // You should probably not use this functionality in production as it will not be performant on large sets.
     public func makeIterator() -> IndexingIterator<[LiteralType]> {
         let r = Auburn.redis!
-        let maybeResult = try? r.smbembers(key: self.key)
+        let maybeResult = try? r.smembers(key: self.key)
         let result = maybeResult! as! [LiteralType]
 
         return result.makeIterator()
