@@ -14,6 +14,30 @@ public class RMap<K: Datable, V: Datable>: RBase, ExpressibleByDictionaryLiteral
     public typealias Key = K
     public typealias Value = V
 
+    public var keys: [K]
+    {
+        get
+        {
+            let r = Auburn.redis!
+            let maybeResult = try? r.hkeys(key: self.key)
+            
+            guard let results = maybeResult as? [RedisType]
+            else
+            {
+                print("\nNil result from HKEYS command.\n")
+                return []
+            }
+            
+            guard results.isEmpty == false
+            else
+            {
+                print("\nResult array from HKEYS command is empty.\n")
+                return []
+            }
+            
+            return convert(resultArray: results) ?? []
+        }
+    }
     public required convenience init(dictionaryLiteral elements: (K, V)...)
     {
         self.init()
@@ -185,6 +209,101 @@ public class RMap<K: Datable, V: Datable>: RBase, ExpressibleByDictionaryLiteral
         case "Double":
             return (Double(actualInt) as! V)
        default:
+            return nil
+        }
+    }
+    
+    func convert(resultArray: [RedisType]) -> [K]?
+    {
+        if resultArray.isEmpty
+        {
+            return nil
+        }
+        else
+        {
+            var convertedObjects = [K]()
+            for result in resultArray
+            {
+                if let converted = convert(result: result)
+                {
+                    convertedObjects.append(converted)
+                }
+            }
+            
+            if convertedObjects.isEmpty
+            {
+                return nil
+            }
+            else
+            {
+                return convertedObjects
+            }
+        }
+    }
+    
+    // FIXME: Only works if field keys are the same type as the map key
+    func convert(result: RedisType) -> K?
+    {
+        let typeString = "\(K.self)"
+        switch typeString
+        {
+        case "String":
+            switch result
+            {
+            case let dataResult as Data:
+                return dataResult.string as? K
+            case let stringResult as String:
+                return stringResult as? K
+            default:
+                return result as? K
+            }
+        case "Data":
+            switch result
+            {
+            case let dataResult as Data:
+                return dataResult as? K
+            case let stringResult as String:
+                return stringResult.data as? K
+            default:
+                return nil
+            }
+        case "Int":
+            switch result
+            {
+            case let dataResult as Data:
+                return Int(dataResult.string) as? K
+            case let stringResult as String:
+                return Int(stringResult) as? K
+            case let intResult as Int:
+                return intResult as? K
+            default:
+                return nil
+            }
+        case "Float":
+            switch result
+            {
+            case let dataResult as Data:
+                return Float(dataResult.string) as? K
+            case let stringResult as String:
+                return Float(stringResult) as? K
+            case let floatResult as Float:
+                return floatResult as? K
+            default:
+                return nil
+            }
+        case "Double":
+            switch result
+            {
+            case let dataResult as Data:
+                return Double(dataResult.string) as? K
+            case let stringResult as String:
+                return Double(stringResult) as? K
+            case let doubleResult as Double:
+                return doubleResult as? K
+            default:
+                return nil
+            }
+        default:
             return nil
         }
     }

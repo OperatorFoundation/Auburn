@@ -147,6 +147,17 @@ class AuburnTests: XCTestCase
         testMap.key="movingMap"
         testMap.delete()
     }
+    
+    func testMapGetKeys()
+    {
+        let keys =  ["a", "b", "c", "d"]
+        let testMap: RMap<String, String> = ["a": "cats", "b": "and", "c": "dogs", "d": "together?!??"]
+        testMap.key="creatingMap"
+        
+        let maybeKeys = testMap.keys
+        XCTAssertEqual(maybeKeys, keys)
+        testMap.delete()
+    }
 
     func testStringMapIteration()
     {
