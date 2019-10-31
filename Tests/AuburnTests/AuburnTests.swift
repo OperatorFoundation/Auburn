@@ -553,6 +553,23 @@ class AuburnTests: XCTestCase
         testSortedSet.delete()
     }
     
+    func testSortedSetGetScore()
+    {
+        let testElement = "together?!??"
+        let testSortedSet: RSortedSet<String> = ["cats": 2, "and": 1, "dogs": 2, testElement: 4]
+        testSortedSet.key="creatingSortedSet"
+        
+        guard let score = testSortedSet.getScore(for: testElement)
+        else
+        {
+            XCTFail()
+            return
+        }
+        
+        XCTAssertEqual(Int(score), 4)
+        testSortedSet.delete()
+    }
+    
     func testSortedSetPopLow()
     {
         let testSortedSet: RSortedSet<String> = ["cats": 2, "and": 1, "dogs": 2, "together?!??": 4]

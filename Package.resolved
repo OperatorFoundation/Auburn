@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/OperatorFoundation/Redshot.git",
         "state": {
           "branch": null,
-          "revision": "d1406f8f321322fb3d3ebbc9743638851890767f",
-          "version": "0.6.1"
+          "revision": "c95fc893ce5902b7441e58b2495a40d02d52439e",
+          "version": "0.7.0"
         }
       }
     ]

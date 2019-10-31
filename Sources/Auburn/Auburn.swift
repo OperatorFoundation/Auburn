@@ -5,11 +5,12 @@ import Datable
 public class Auburn
 {
     static private let queue: DispatchQueue = DispatchQueue(label: "RedisTransactions")
+    static var port = 6379
     static var _redis: Redis?
     static var redis: Redis? {
         get {
             if _redis == nil {
-                _redis = try? Redis(hostname: "localhost", port: 6379)
+                _redis = try? Redis(hostname: "localhost", port: port)
             }
 
             return _redis

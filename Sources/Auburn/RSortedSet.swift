@@ -146,7 +146,7 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
     public subscript(key: LiteralType) -> Float?
     {
         let r = Auburn.redis!
-        let maybeResult = try? r.sendCommand("zscore", values: [self.key, key])
+        let maybeResult = try? r.zscore(setKey: self.key, fieldKey: key)
         guard let result = maybeResult
         else
         {
@@ -172,14 +172,37 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
         }
     }
     
-    /// Returns all the element keys in the sorted set with a score between min and max (including elements with score equal to min or max). The elements are considered to be ordered from low to high scores.
-    public func getElements(withMinScore minScore: Double, andMaxScore maxScore: Double) -> [LiteralType]?
+    /// ZSCORE Returns the score of member in the sorted set at key.
+    /// If member does not exist in the sorted set, or key does not exist, nil is returned.
+    ///
+    /// - Parameters:
+    ///   - element: The member of the sorted set to return the score for.
+    /// - Returns:  Optional Float, The score of member.
+    public func getScore(for element: LiteralType) -> Float?
     {
         guard let r = Auburn.redis
             else
         {
             return nil
         }
+        
+        let maybeResult = try? r.zscore(setKey: self.key, fieldKey: element)
+        
+        guard let result = maybeResult as? Data
+        else
+       {
+           return nil
+       }
+        
+        let stringFromData = result.string
+        return Float(stringFromData)
+    }
+    
+    /// Returns all the element keys in the sorted set with a score between min and max (including elements with score equal to min or max). The elements are considered to be ordered from low to high scores.
+    public func getElements(withMinScore minScore: Double, andMaxScore maxScore: Double) -> [LiteralType]?
+    {
+        guard let r = Auburn.redis
+            else { return nil }
         
         let maybeResults = try? r.zrangebyscore(setKey: self.key, minScore: minScore, maxScore: maxScore)
         
