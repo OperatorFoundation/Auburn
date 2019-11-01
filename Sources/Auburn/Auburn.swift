@@ -5,7 +5,7 @@ import Datable
 public class Auburn
 {
     static private let queue: DispatchQueue = DispatchQueue(label: "RedisTransactions")
-    static var port = 6379
+    static var port = 6380
     static var _redis: Redis?
     static var redis: Redis? {
         get {
