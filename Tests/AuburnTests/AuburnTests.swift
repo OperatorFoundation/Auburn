@@ -11,6 +11,10 @@ import XCTest
 
 class AuburnTests: XCTestCase
 {
+    
+    override class func setUp() {
+        Auburn.port = 6379
+    }
     func testDBFilename()
     {
         let name = Auburn.dbfilename
@@ -137,6 +141,16 @@ class AuburnTests: XCTestCase
     {
         let testMap: RMap<String, String> = ["a": "cats", "b": "and", "c": "dogs", "d": "together?!??"]
         testMap.key="creatingMap"
+        testMap.delete()
+    }
+    
+    func testMapCreateWithDictionary()
+    {
+        let testDictionary = ["a": "cats", "b": "and", "c": "dogs", "d": "together?!??"]
+        let testMap = RMap<String, String>(dictionary: testDictionary)
+        testMap.key="creatingMap"
+        
+        XCTAssertEqual(testMap["a"], testDictionary["a"])
         testMap.delete()
     }
 

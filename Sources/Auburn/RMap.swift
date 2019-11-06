@@ -54,6 +54,23 @@ public class RMap<K: Datable, V: Datable>: RBase, ExpressibleByDictionaryLiteral
             _ = try? r.hset(key: key, field: itemKey, value: value)
         }
     }
+    
+    public required convenience init(dictionary: Dictionary<String, V>)
+    {
+        self.init()
+
+        guard let r = Auburn.redis else
+        {
+            return
+        }
+
+        _ = try? r.sendCommand("del", values: [key])
+
+        for (itemKey, value) in dictionary
+        {
+            _ = try? r.hset(key: key, field: itemKey, value: value)
+        }
+    }
 
     public subscript(key: K) -> V?
     {
