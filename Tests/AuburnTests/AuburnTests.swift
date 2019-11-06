@@ -15,6 +15,7 @@ class AuburnTests: XCTestCase
     override class func setUp() {
         Auburn.port = 6379
     }
+    
     func testDBFilename()
     {
         let name = Auburn.dbfilename
@@ -68,6 +69,16 @@ class AuburnTests: XCTestCase
             testList.delete()
             return
         }
+        testList.delete()
+    }
+    
+    func testListCreateWithArray()
+    {
+        let testArray = ["cats", "and", "dogs", "together?!??"]
+        let testList = RList<String>(array: testArray)
+        testList.key="creating"
+                
+        XCTAssertEqual(testList.count, 4)
         testList.delete()
     }
     

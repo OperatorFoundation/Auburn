@@ -147,6 +147,20 @@ public final class RList<LiteralType: Datable>: RBase, ExpressibleByArrayLiteral
             _ = try? r.sendCommand("rpush", values: [key, value])
         }
     }
+    
+    public convenience init(array: [LiteralType]) {
+        self.init()
+
+        guard let r = Auburn.redis else {
+            return
+        }
+
+        _ = try? r.sendCommand("del", values: [key])
+
+        for value in array {
+            _ = try? r.sendCommand("rpush", values: [key, value])
+        }
+    }
 
     public func dropFirst(_ n: Int) -> RListSubSequence<LiteralType> {
         return RListSubSequence(parent: self, startIndex: n, endIndex: -1)
