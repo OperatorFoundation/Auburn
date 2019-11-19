@@ -13,7 +13,12 @@ class AuburnTests: XCTestCase
 {
     
     override class func setUp() {
-        Auburn.port = 6379
+        Auburn.port = 6380
+    }
+    
+    func testRedisIsRunning()
+    {
+        XCTAssertTrue(Auburn.redisIsRunning())
     }
     
     func testDBFilename()

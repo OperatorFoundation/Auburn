@@ -78,6 +78,16 @@ public class Auburn
         }
     }
     
+    static public func redisIsRunning() -> Bool
+    {
+        guard let r = Auburn.redis else
+        {
+            return false
+        }
+        
+        return(r.ping())
+    }
+    
     static public func restartRedis()
     {
         _redis = nil
