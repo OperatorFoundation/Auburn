@@ -9,7 +9,7 @@ import Foundation
 import RedShot
 import Datable
 
-public final class RSet<LiteralType: Datable>: RBase, ExpressibleByArrayLiteral, Equatable, SetAlgebra, Sequence {
+public final class RSet<LiteralType: RedisType>: RBase, ExpressibleByArrayLiteral, Equatable, SetAlgebra, Sequence {
     public typealias Element = LiteralType
     public typealias Iterator = IndexingIterator<[LiteralType]>
     public typealias Index = Int

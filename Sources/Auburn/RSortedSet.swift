@@ -9,7 +9,7 @@ import Foundation
 import RedShot
 import Datable
 
-public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLiteral, ExpressibleByDictionaryLiteral, Equatable, SetAlgebra
+public final class RSortedSet<LiteralType: RedisType>: RBase, ExpressibleByArrayLiteral, ExpressibleByDictionaryLiteral, Equatable, SetAlgebra
 {
     public typealias Element = (LiteralType, Float)
     public typealias Index = Int
@@ -381,12 +381,7 @@ public final class RSortedSet<LiteralType: Datable>: RBase, ExpressibleByArrayLi
             return nil
         }
         
-        let zincrbyResult = try? redis.zincrby(setKey: self.key, increment: increment, fieldKey: fieldKey)
-        guard let result = zincrbyResult as? Datable
-        else
-        {
-            return nil
-        }
+        let result = try? redis.zincrby(setKey: self.key, increment: increment, fieldKey: fieldKey)
         
         if "\(type(of: result))" == "NSNull"
         {

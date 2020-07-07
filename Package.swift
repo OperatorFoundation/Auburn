@@ -1,11 +1,11 @@
-// swift-tools-version:5.0
+// swift-tools-version:5.1
 
 import PackageDescription
 
 let package = Package(
     name: "Auburn",
     platforms: [
-        .macOS(.v10_11) 
+        .macOS(.v10_15) 
     ],
     products: [
         .library(
@@ -13,7 +13,7 @@ let package = Package(
             targets: ["Auburn"])
     ],
     dependencies: [
-        .package(url: "https://github.com/OperatorFoundation/Redshot.git", from: "0.8.0")
+        .package(url: "https://github.com/OperatorFoundation/Redshot.git", from: "0.8.4")
     ],
     targets: [
         .target(

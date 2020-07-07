@@ -192,7 +192,7 @@ class AuburnTests: XCTestCase
     func testStringMapIteration()
     {
         let testMap: RMap<String, String> = ["a": "cats", "b": "and", "c": "dogs", "d": "together?!??"]
-        var golden: Dictionary<String, String> = ["a": "cats", "b": "and", "c": "dogs", "d": "together?!??"]
+        let golden: Dictionary<String, String> = ["a": "cats", "b": "and", "c": "dogs", "d": "together?!??"]
 
         for itemKey in ["a", "b", "c", "d"]
         {
@@ -205,7 +205,7 @@ class AuburnTests: XCTestCase
     func testIntMapIteration()
     {
         let testMap: RMap<String, Int> = ["a": 1, "b": 2, "c": 3, "d": 4]
-        var golden: Dictionary<String, Int> = ["a": 1, "b": 2, "c": 3, "d": 4]
+        let golden: Dictionary<String, Int> = ["a": 1, "b": 2, "c": 3, "d": 4]
 
         for itemKey in ["a", "b", "c", "d"]
         {
@@ -882,19 +882,5 @@ class AuburnTests: XCTestCase
         XCTAssertTrue(testRSortedSet2.isSubset(of: testRSortedSet2))
         XCTAssertFalse(testRSortedSet2.isStrictSubset(of: testRSortedSet2))
     }
-    
-    func testTransactions()
-    {
-        let testList: RList<String> = ["cats", "and", "dogs", "together?!??"]
-        let result = Auburn.transaction {
-            (r) in
-            
-            let _ = testList.append("1234")
-            let _ = testList.removeFirst()
-            let _ = testList.count
-        }
-        
-        NSLog("\ntransaction result: \(String(describing: result))")
-        XCTAssertNotNil(result)
-    }
+
 }

@@ -9,7 +9,7 @@ import Foundation
 import RedShot
 import Datable
 
-public struct RListSubSequence<LiteralType: Datable>: Sequence {
+public struct RListSubSequence<LiteralType: RedisType>: Sequence {
     public typealias Element = LiteralType
     public typealias Iterator = RListIterator<LiteralType>
     public typealias Index = Int
@@ -35,7 +35,7 @@ public struct RListSubSequence<LiteralType: Datable>: Sequence {
     }
 }
 
-public struct RListIterator<LiteralType: Datable>: IteratorProtocol {
+public struct RListIterator<LiteralType: RedisType>: IteratorProtocol {
     public typealias Element = LiteralType
     public typealias Index = Int
 
@@ -78,7 +78,7 @@ public struct RListIterator<LiteralType: Datable>: IteratorProtocol {
     }
 }
 
-public final class RList<LiteralType: Datable>: RBase, ExpressibleByArrayLiteral, Sequence {
+public final class RList<LiteralType: RedisType>: RBase, ExpressibleByArrayLiteral, Sequence {
     public typealias ArrayLiteralElement = LiteralType
     public typealias Index = Int
     public typealias Element = LiteralType

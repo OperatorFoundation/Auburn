@@ -9,7 +9,7 @@ import Foundation
 import RedShot
 import Datable
 
-public class RMap<K: Datable, V: Datable>: RBase, ExpressibleByDictionaryLiteral
+public class RMap<K: RedisType, V: RedisType>: RBase, ExpressibleByDictionaryLiteral
 {
     public typealias Key = K
     public typealias Value = V
@@ -180,54 +180,94 @@ public class RMap<K: Datable, V: Datable>: RBase, ExpressibleByDictionaryLiteral
         }
         
         let hincrbyResult = try? redis.hincrby(hashKey: self.key, increment: 1, fieldKey: fieldKey)
-        guard let result = hincrbyResult as? Datable
+        
+        guard let mysteryResult = hincrbyResult
             else
         {
             return nil
         }
         
-        if "\(type(of: result))" == "NSNull"
+        if "\(type(of: mysteryResult))" == "NSNull"
         {
             return nil
         }
         
-        let resultAsInt:Int?
-        
-        switch result
+        switch mysteryResult
         {
-        case let dataResult as Data:
-            let stringFromData = dataResult.string
-            resultAsInt = Int(stringFromData)
-        case let stringResult as String:
-            resultAsInt = Int(stringResult)
-        case let intResult as Int:
-            resultAsInt = intResult
+        case let datableResult as Datable:
+            let resultAsInt:Int?
+             
+             switch datableResult
+             {
+             case let dataResult as Data:
+                 let stringFromData = dataResult.string
+                 resultAsInt = Int(stringFromData)
+             case let stringResult as String:
+                 resultAsInt = Int(stringResult)
+             default:
+                 return nil
+             }
+             
+             guard let actualInt = resultAsInt
+             else
+             {
+                 return nil
+             }
+             
+             let typeString = "\(V.self)"
+             switch typeString
+             {
+             case "Int":
+                 return (actualInt as! V)
+             case "String":
+                 return (String(actualInt) as! V)
+             case "Data":
+                 return (actualInt.data as! V)
+             case "Float":
+                 return (Float(actualInt) as! V)
+             case "Double":
+                 return (Double(actualInt) as! V)
+            default:
+                 return nil
+             }
+        case let maybeDatableResult as MaybeDatable:
+            let resultAsInt:Int?
+             
+             switch maybeDatableResult
+             {
+             case let intResult as Int:
+                 resultAsInt = intResult
+             default:
+                 return nil
+             }
+             
+             guard let actualInt = resultAsInt
+             else
+             {
+                 return nil
+             }
+             
+             let typeString = "\(V.self)"
+             switch typeString
+             {
+             case "Int":
+                 return (actualInt as! V)
+             case "String":
+                 return (String(actualInt) as! V)
+             case "Data":
+                 return (actualInt.data as! V)
+             case "Float":
+                 return (Float(actualInt) as! V)
+             case "Double":
+                 return (Double(actualInt) as! V)
+            default:
+                 return nil
+             }
         default:
             return nil
         }
         
-        guard let actualInt = resultAsInt
-        else
-        {
-            return nil
-        }
         
-        let typeString = "\(V.self)"
-        switch typeString
-        {
-        case "Int":
-            return (actualInt as! V)
-        case "String":
-            return (String(actualInt) as! V)
-        case "Data":
-            return (actualInt.data as! V)
-        case "Float":
-            return (Float(actualInt) as! V)
-        case "Double":
-            return (Double(actualInt) as! V)
-       default:
-            return nil
-        }
     }
     
     func convert(resultArray: [RedisType]) -> [K]?

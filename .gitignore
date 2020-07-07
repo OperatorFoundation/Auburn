@@ -2,3 +2,7 @@
 *.xcodeproj
 .DS_Store
 Package.resolved
+*.xcworkspacedata
+*.xcuserstate
+*.xcscheme
+.swiftpm/xcode/xcuserdata/mafalda.xcuserdatad/xcschemes/xcschememanagement.plist
